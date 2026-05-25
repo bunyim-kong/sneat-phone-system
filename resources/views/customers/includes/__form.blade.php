@@ -78,7 +78,9 @@
               />
               @error('id_card_number')
                   <span class="invalid-feedback" role="alert">
-                      <strong>{{ $message }}</strong>
+                      <strong>{{ $message }}</strong>@include('customers.includes.__form', ['customer' => $customer])
+                    @include('customers.includes.__company-form', ['customer' => $customer])
+                    @include('customers.includes.__guarantor-form', ['customer' => $customer])
                   </span>
               @enderror
           </div>
