@@ -35,6 +35,11 @@ class OrderController extends Controller
     
     $parameterNames = [];
     if ($request->search) {
+        $query = Order::query()->with(['customer', 'employee']);
+
+        $customers = Customer::pluck('name', 'id');
+        $parameterNames = [];
+
         $filters = $request->only(['customer', 'from_date', 'to_date']);
 
         if (!empty($filters['customer'])) {

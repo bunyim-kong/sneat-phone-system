@@ -80,6 +80,7 @@ Route::group([
     });
     Route::group(['prefix'=>'sale','as'=>'sales.'], function(){
       Route::get('/', [OrderController::class, 'index'])->name('index');
+      Route::get('/create', [OrderController::class, 'create'])->name('create');
      
     });
     Route::group(['prefix'=>'cart','as'=>'carts.'], function(){
