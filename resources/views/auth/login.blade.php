@@ -47,10 +47,11 @@
                                     <div class="card-body">
                                     <!-- Logo -->
                                         <div class="app-brand justify-content-center">
-                                            <img src="{{ $company->image_logo }}" alt="logo" width="100px"/>
+                                        
+                                            <img src="{{ $company->image_logo ?? '' }}" alt="logo" width="50px"/>
                                         </div>
                                     <!-- /Logo -->
-                                    <h4 class="mb-2 text-center">{{ $company->name ?? 'CMy Phone ShopE' }}</h4>
+                                    <h4 class="mb-2 text-center fs-2">{{ $company->name ?? 'Sneat' }}</h4>
                                     <p class="mb-4 text-center">Please sign-in to your account.</p>
                                     <form id="formAuthentication" class="mb-3" action="{{ route('login') }}" method="POST">
                                         @csrf
