@@ -72,6 +72,27 @@ class OrderController extends Controller
     ));
   }
 
+    public function create(string $lang)
+    {
+        $customers = Customer::orderBy('name')->get();
+        return view('orders.create', compact('customers'));
+    }
+
+    public function store(Request $request)
+    {
+        $order = Order::create([
+        'customer_id'    => $request->customer_id ?: null,
+        'employee_id'    => Auth::id(),
+        'status'         => Order::STATUS_ACTIVE,
+        'total_amount'   => $request->total_amount,
+        'payment_status' => $request->payment_status,
+        'payment_type'   => $request->payment_type,
+        'note'           => $request->note,
+        'order_date'     => $request->order_date,
+    ]);
+
+    }
+
      /**
      * Display the specified resource.
      */
