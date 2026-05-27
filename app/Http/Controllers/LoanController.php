@@ -31,7 +31,42 @@ class LoanController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Loan::query();
+        $customers = Customer::pluck('name', 'id');
+        $parameterNames = [];
+
+        $query = Loan::query()->with(['customer', 'product']);
+
+        if ($request->search) {
+            $filters = $request->only(['customer', 'from_date', 'to_date', 'search_loan']);
+
+            if (!empty($filters['customer'])) {
+                $query->where('customer_id', $filters['customer']);
+                $parameterNames['customer'] = $filters['customer'];
+            }
+
+            if (!empty($filters['search_loan'])) {
+                $query->whereHas('customer', function($q) use ($filters) {
+                    $q->where('name', 'like', '%'.$filters['search_loan'].'%');
+                });
+                $parameterNames['search_loan'] = $filters['search_loan'];
+            }
+
+            if (!empty($filters['from_date']) && !empty($filters['to_date'])) {
+                $query->whereBetween('date', [$filters['from_date'], $filters['to_date']]);
+                $parameterNames['from_date'] = $filters['from_date'];
+                $parameterNames['to_date'] = $filters['to_date'];
+            } elseif (!empty($filters['from_date'])) {
+                $query->where('date', '>=', $filters['from_date']);
+                $parameterNames['from_date'] = $filters['from_date'];
+            } elseif (!empty($filters['to_date'])) {
+                $query->where('date', '<=', $filters['to_date']);
+                $parameterNames['to_date'] = $filters['to_date'];
+            }
+        }
+
+        $loans = $query->orderBy('created_at', 'desc')->paginate(20)->withQueryString();
+
+        return view('loans.index', compact('loans', 'customers', 'parameterNames'));
     }
 
     /**
