@@ -93,8 +93,8 @@
     @else
         <!-- List Product Table -->
         <div class="card">
-          <div class="card-header"> 
-            <h5>{{ __('product.list_title')}}</h5> 
+          <div class="card-header">
+            <h5>{{ __('product.list_title')}}</h5>
             <h6>ផលិតផលក្នុងស្តុកសរុប : ក្នុងស្តុក {{$totalProductAvailable}} (លក់ចេញ:{{$totalProductSold}})</h6>
           </div>
           <div class="table-responsive text-nowrap">

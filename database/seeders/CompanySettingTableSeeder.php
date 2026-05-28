@@ -14,7 +14,7 @@ class CompanySettingTableSeeder extends Seeder
     public function run(): void
     {
       CompanySetting::create([
-        'name' => 'CMy Phone Shop',
+        'name' => 'Unique Aura',
         'detail' => 'មានលក់ទូរស័ព្ទ',
         'logo' => '',
         'interest' => '3',

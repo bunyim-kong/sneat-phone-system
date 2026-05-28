@@ -12,7 +12,6 @@ use App\Models\Storage;
 use App\Http\Requests\ProductRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\File;
 
 class ProductController extends Controller
 {
@@ -92,8 +91,10 @@ class ProductController extends Controller
       $storages = Storage::all();
       $type_of_machines = Product::TYPE_OF_MACHINE;
       $lock_types = Network::all();
+      $condition = Product::CONDITION;
+      $product_statuses = Product::STATUS_OPTION;
 
-      return view('products.create', compact('brands','all_series', 'colors', 'models', 'storages', 'type_of_machines', 'lock_types'));
+      return view('products.create', compact('brands','all_series', 'colors', 'models', 'storages', 'type_of_machines', 'lock_types', 'condition', 'product_statuses'));
     }
 
     /**
@@ -105,26 +106,26 @@ class ProductController extends Controller
       $product->product_code = $request->product_code ?? '';
       $product->product_name = $request->product_name;
       $product->product_imei = $request->product_imei;
-      $product->brand_id = $request->brand;
-      $product->series_id = $request->series;
-      $product->color_id = $request->color;
-      $product->model_type_id = $request->model_type;
+      $product->brand_id = $request->brand_id;
+      $product->series_id = $request->series_id;
+      $product->color_id = $request->color_id;
+      $product->model_type_id = $request->model_id;
       $product->condition = $request->condition;
-      $product->storage_id = $request->storage;
+      $product->storage_id = $request->storage_id;
       $product->type_of_machine = $request->type_of_machine;
-      $product->network_id = $request->network;
+      $product->network_id = $request->lock_by ?: null;
       $product->battery_percentage = $request->battery_percentage;
-      $product->percentage = $request->percentage;
+      $product->percentage = $request->product_percentage;
       $product->purchase_price = $request->purchase_price;
       $product->selling_price = $request->selling_price;
       $product->employee_id = Auth::user()->id;
       $product->purchase_date = $request->purchase_date;
       $product->image = '';
-      $product->status = $request->status;
+      $product->status = $request->product_status;
       $product->note = $request->note ?? '';
 
       $product->save();
-      if ($image = $request->file('image')) {
+      if ($image = $request->file('product_image')) {
         $destinationPath = 'images/product/';
         $formattedNumber = str_pad($product->id, 5, '0', STR_PAD_LEFT);
         $filename = $image->getClientOriginalName();
@@ -134,7 +135,7 @@ class ProductController extends Controller
         $product->save();
       }
        // Optionally, you can return a response to indicate success or redirect to a different page.
-      return redirect()->route('products.show', withLang(['product' => $product->id]));
+      return redirect()->route('products.index', withLang());
     }
 
     /**
@@ -142,8 +143,8 @@ class ProductController extends Controller
      */
     public function show(string $lang, Product $product)
     {
-      $product = $product->with('brand', 'series', 'color', 'modelType', 'storage')->findOrfail($product->id);
-      return view('products.show', ['product' => $product]);
+      $product->load('brand', 'series', 'color', 'modelType', 'storage');
+      return view('products.show', compact('product'));
     }
 
     /**
@@ -151,16 +152,62 @@ class ProductController extends Controller
      */
     public function edit(string $lang, Product $product)
     {
+      $brands = Brand::all();
+      $colors = Color::all();
+      $models = ModelType::all();
+      $storages = Storage::all();
 
+      $all_series = Series::all();
+
+      $condition = Product::CONDITION;
+
+      $type_of_machines = Product::TYPE_OF_MACHINE;
+
+      $lock_types = Network::all();
+
+      $product_statuses = Product::STATUS_OPTION;
+
+      return view('products.edit', compact(
+          'product',
+          'brands',
+          'colors',
+          'models',
+          'storages',
+          'all_series',
+          'condition',
+          'type_of_machines',
+          'lock_types',
+          'product_statuses'
+      ));
     }
 
     /**
      * Update the specified resource in storage.
      */
     public function update(ProductRequest $request, string $lang, Product $product)
-    {
+  {
+      // 1. Retrieve the validated data from your ProductRequest
+      $validatedData = $request->validated();
 
-    }
+      // 2. (Optional) Handle file/image uploads if they exist in the request
+      if ($request->hasFile('image')) {
+          // Delete old image if necessary, then store the new one
+          // $validatedData['image'] = $request->file('image')->store('products', 'public');
+      }
+
+      // 3. Update the product
+      // If you are using standard columns:
+      $product->update($validatedData);
+
+      // OR if you are using a translation package where you set the locale first:
+      // app()->setLocale($lang);
+      // $product->update($validatedData);
+
+      // 4. Redirect the user back with a success flash message
+      return redirect()
+          ->route('products.index', ['lang' => $lang])
+          ->with('success', __('Product updated successfully.'));
+  }
 
     public function getSeriesBybrand(string $lang, string $id)
   {

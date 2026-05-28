@@ -17,8 +17,7 @@
                         <div class="card-body">
                             <div class="d-flex align-items-start align-items-sm-center gap-4 mb-4">
                                 <div class="text-center">
-                                    <img src="{{ asset('assets/img/avatars/product-placeholder.png') }}" alt="product-image" class="d-block mb-1" id="productImagePreview" style="width: 100px; height: 100px; object-fit: contain;">
-                                    <small class="text-muted d-block" style="font-size: 10px; line-height: 1.2;">Product Image<br>Coming Soon</small>
+                                    <img src="{{ asset('assets/img/blank-product.svg') }}" alt="product-image" class="d-block mb-1" id="productImagePreview" style="width: 100px; height: 100px; object-fit: contain;">
                                 </div>
                                 <div class="button-wrapper">
                                     <label for="upload_image" class="btn btn-primary me-2 mb-2" tabindex="0">
@@ -36,28 +35,30 @@
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <label class="form-label" for="product_name">Product Name</label>
-                                    <input type="text" id="product_name" name="product_name" class="form-control" autofocus>
+                                    <input type="text" id="product_name" name="product_name" class="form-control" autofocus required>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label" for="product_imei">Product IMEI</label>
-                                    <input type="text" id="product_imei" name="product_imei" class="form-control">
+                                    <input type="text" id="product_imei" name="product_imei" class="form-control" required>
                                 </div>
 
                                 <div class="col-md-6">
                                     <label class="form-label" for="product_code">Product Code</label>
-                                    <input type="text" id="product_code" name="product_code" class="form-control">
+                                    <input type="text" id="product_code" name="product_code" class="form-control" required>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label" for="condition">Condition</label>
-                                    <select id="condition" name="condition" class="form-select">
-                                        <option value="used" selected>Used</option>
-                                        <option value="new">New</option>
+                                    <select id="condition" name="condition" class="form-select" required>
+                                        <option value="">Select an option</option>
+                                        @foreach ($condition ?? [] as $id => $name)
+                                          <option value="{{ $id }}">{{ $name }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
 
                                 <div class="col-md-6">
                                     <label class="form-label" for="brand">Brand</label>
-                                    <select id="brand" name="brand_id" class="form-select">
+                                    <select id="brand" name="brand_id" class="form-select" required>
                                         <option value="">Select an option</option>
                                         @foreach($brands ?? [] as $brand)
                                             <option value="{{ $brand->id }}">{{ $brand->name }}</option>
@@ -66,7 +67,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label" for="series">Series</label>
-                                    <select id="series" name="series_id" class="form-select" disabled>
+                                    <select id="series" name="series_id" class="form-select" disabled required>
                                         @foreach($all_series as $item)
                                             <option value="{{ $item->id }}" data-brand="{{ $item->brand_id }}" class="series-option" style="display: none;">
                                                 {{ $item->name }}
@@ -77,7 +78,7 @@
 
                                 <div class="col-md-6">
                                     <label class="form-label" for="color">Color</label>
-                                    <select id="color" name="color_id" class="form-select">
+                                    <select id="color" name="color_id" class="form-select" required>
                                         <option value="">Select an option</option>
                                         @foreach($colors ?? [] as $color)
                                             <option value="{{ $color->id }}">{{ $color->name }}</option>
@@ -86,7 +87,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label" for="model">Model</label>
-                                    <select id="model" name="model_id" class="form-select">
+                                    <select id="model" name="model_id" class="form-select" required>
                                         <option value="">Select an option</option>
                                         @foreach($models ?? [] as $model)
                                             <option value="{{ $model->id }}">{{ $model->name }}</option>
@@ -96,7 +97,7 @@
 
                                 <div class="col-md-6">
                                     <label class="form-label" for="storage">Storage</label>
-                                    <select id="storage" name="storage_id" class="form-select">
+                                    <select id="storage" name="storage_id" class="form-select" required>
                                         <option value="">Select an option</option>
                                         @foreach($storages ?? [] as $storage)
                                             <option value="{{ $storage->id }}">{{ $storage->name }}</option>
@@ -107,7 +108,7 @@
                                     <div class="row g-2">
                                         <div class="col-md-6">
                                             <label class="form-label" for="type_of_machine">Type of Machine</label>
-                                            <select id="type_of_machine" name="type_of_machine" class="form-select">
+                                            <select id="type_of_machine" name="type_of_machine" class="form-select" required>
                                               <option value="">Select an option</option>
                                               @foreach ($type_of_machines ?? [] as $id => $name)
                                                 <option value="{{ $id }}">{{ $name }}</option>
@@ -116,7 +117,7 @@
                                         </div>
                                         <div class="col-md-6">
                                             <label class="form-label" for="lock_by">Lock By</label>
-                                            <select id="lock_by" name="lock_by" class="form-select" disabled>
+                                            <select id="lock_by" name="lock_by" class="form-select" disabled required>
                                                 <option value="">Select an option</option>
                                                 @foreach ($lock_types ?? [] as $lock_type)
                                                 <option value="{{ $lock_type->id }}" class="lock-option" style="display: none;">
@@ -131,14 +132,14 @@
                                 <div class="col-md-6">
                                     <label class="form-label" for="battery_percentage">Battery Percentage</label>
                                     <div class="input-group input-group-merge">
-                                        <input type="number" id="battery_percentage" name="battery_percentage" class="form-control">
+                                        <input type="number" id="battery_percentage" name="battery_percentage" class="form-control" required>
                                         <span class="input-group-text">%</span>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label" for="product_percentage">Product Percentage</label>
                                     <div class="input-group input-group-merge">
-                                        <input type="number" id="product_percentage" name="product_percentage" class="form-control">
+                                        <input type="number" id="product_percentage" name="product_percentage" class="form-control" required>
                                         <span class="input-group-text">%</span>
                                     </div>
                                 </div>
@@ -146,26 +147,29 @@
                                 <div class="col-md-6">
                                     <label class="form-label" for="purchase_price">Purchase Price</label>
                                     <div class="input-group input-group-merge">
-                                        <input type="number" step="0.01" id="purchase_price" name="purchase_price" class="form-control">
+                                        <input type="number" step="0.01" id="purchase_price" name="purchase_price" class="form-control" required>
                                         <span class="input-group-text">$</span>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label" for="selling_price">Selling Price</label>
                                     <div class="input-group input-group-merge">
-                                        <input type="number" step="0.01" id="selling_price" name="selling_price" class="form-control">
+                                        <input type="number" step="0.01" id="selling_price" name="selling_price" class="form-control" required>
                                         <span class="input-group-text">$</span>
                                     </div>
                                 </div>
 
                                 <div class="col-md-6">
                                     <label class="form-label" for="purchase_date">Purchase Date</label>
-                                    <input type="date" id="purchase_date" name="purchase_date" class="form-control">
+                                    <input type="date" id="purchase_date" name="purchase_date" class="form-control" required>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label" for="product_status">Product Status</label>
-                                    <select id="product_status" name="product_status" class="form-select">
+                                    <select id="product_status" name="product_status" class="form-select" required>
                                         <option value="">Select an option</option>
+                                        @foreach ($product_statuses ?? [] as $id => $name)
+                                        <option value="{{ $id }}">{{ $name }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                             </div>

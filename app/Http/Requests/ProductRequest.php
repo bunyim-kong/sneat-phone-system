@@ -24,18 +24,20 @@ class ProductRequest extends FormRequest
       return [
         'product_name' => 'required|string|max:255',
         'product_imei' => 'required|numeric',
-        'brand' => 'required|integer|exists:brands,id',
-        'series' => 'required|integer|exists:series,id',
-        'color' => 'required|integer|exists:colors,id',
-        'model_type' => 'required|integer|exists:model_types,id',
+        'brand_id' => 'required|integer|exists:brands,id',
+        'series_id' => 'required|integer|exists:series,id',
+        'color_id' => 'required|integer|exists:colors,id',
+        'model_type_id' => 'required|integer|exists:model_types,id',
         'condition' => 'required|string|max:255',
-        'storage' => 'required|integer|exists:storages,id',
-        'type_of_machine' => 'required|string|max:255',
-        'network' => 'required_if:type_of_machine,2',
+        'storage_id' => 'required|integer|exists:storages,id',
+        'type_of_machine' => 'required|integer',
+        'network_id' => 'nullable|required_if:type_of_machine,4|integer|exists:networks,id',
         'purchase_price' => 'required|numeric',
         'selling_price' => 'numeric',
         'purchase_date' => 'required|date',
-        'status' => 'required|string', // Change 'active' and 'inactive' to the valid status values.
+        'status' => 'required|integer',
+        'product_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'note' => 'nullable|string',
     ];
     }
 }

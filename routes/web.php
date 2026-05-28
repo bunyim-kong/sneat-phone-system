@@ -63,11 +63,7 @@ Route::group([
       Route::get('/loan/list-loan', [ReportController::class, 'listLoan'])->name('loan.list-loan');
     });
     Route::resource('roles', RoleController::class);
-    Route::group(['prefix'=>'product', 'as'=>'products.'], function(){
-      Route::get('/', [ProductController::class, 'index'])->name('index');
-      Route::get('/create', [ProductController::class, 'create'])->name('create');
-      Route::post('/store', [ProductController::class, 'store'])->name('store');
-    });
+    Route::resource('products', ProductController::class);
     Route::group(['prefix'=>'user','as'=>'users.'], function(){
         Route::get('/', [EmployeeController::class, 'index'])->name('index');
         Route::get('/edit/{id}', [EmployeeController::class, 'edit'])->name('edit');
@@ -194,4 +190,4 @@ Route::group([
     Route::put('company/', [CompanySettingController::class, 'update'])->name('company.update');
 });
 
-Route::resource('/roles/create', RoleController::class);
+Route::resource('/roles/show', RoleController::class);
