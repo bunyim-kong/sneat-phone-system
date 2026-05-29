@@ -23,6 +23,7 @@ use App\Http\Controllers\StorageController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\OrderCustomersController;
 
 /*
 |--------------------------------------------------------------------------
@@ -76,6 +77,10 @@ Route::group([
         Route::get('/profile/edit/password', [UserController::class, 'editPassword'])->name('edit.profile.password');
         Route::post('/profile/update/password', [UserController::class, 'updatePassword'])->name('update.profile.password');
     });
+    
+     Route::get('/ordercustomers', [OrderCustomersController::class, 'index'])
+    ->name('ordercustomers.index');
+
     Route::group(['prefix'=>'order','as'=>'orders.'], function(){
       Route::get('/', [OrderController::class, 'index'])->name('index');
       Route::get('/create', [OrderController::class, 'create'])->name('create');
