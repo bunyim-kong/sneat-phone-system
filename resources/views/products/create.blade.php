@@ -17,7 +17,7 @@
                         <div class="card-body">
                             <div class="d-flex align-items-start align-items-sm-center gap-4 mb-4">
                                 <div class="text-center">
-                                    <img src="{{ asset('assets/img/blank-product.svg') }}" alt="product-image" class="d-block mb-1" id="productImagePreview" style="width: 100px; height: 100px; object-fit: contain;">
+                                    <img src="{{ asset('assets/img/blank-product.svg') }}" alt="product-image" class="rounded" id="productImagePreview" style="width: 100px; height: 100px; object-fit: cover;">
                                 </div>
                                 <div class="button-wrapper">
                                     <label for="upload_image" class="btn btn-primary me-2 mb-2" tabindex="0">
@@ -25,7 +25,7 @@
                                         <i class="bx bx-upload d-block d-sm-none"></i>
                                         <input type="file" id="upload_image" name="product_image" class="account-file-input" hidden accept="image/png, image/jpeg, image/gif">
                                     </label>
-                                    <button type="button" class="btn btn-outline-secondary account-image-reset mb-2" id="resetImage">
+                                    <button type="reset" class="btn btn-outline-secondary account-image-reset mb-2" id="resetImage">
                                         <span>Reset</span>
                                     </button>
                                     <p class="text-muted mb-0" style="font-size: 0.8rem;">Allowed JPG, GIF or PNG.</p>
@@ -87,8 +87,8 @@
                                     </select>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label" for="model">Model</label>
-                                    <select id="model" name="model_id" class="form-select" required>
+                                    <label class="form-label" for="model_type_id">Model</label>
+                                    <select id="model_type_id" name="model_type_id" class="form-select" required>
                                         <option value="">Select an option</option>
                                         @foreach($models ?? [] as $model)
                                             <option value="{{ $model->id }}">{{ $model->name }}</option>
@@ -117,8 +117,8 @@
                                             </select>
                                         </div>
                                         <div class="col-md-6">
-                                            <label class="form-label" for="lock_by">Lock By</label>
-                                            <select id="lock_by" name="lock_by" class="form-select" disabled required>
+                                            <label class="form-label" for="network_id">Lock By</label>
+                                            <select id="network_id" name="network_id" class="form-select" disabled required>
                                                 <option value="">Select an option</option>
                                                 @foreach ($lock_types ?? [] as $lock_type)
                                                 <option value="{{ $lock_type->id }}" class="lock-option" style="display: none;">
@@ -138,9 +138,9 @@
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label" for="product_percentage">Product Percentage</label>
+                                    <label class="form-label" for="percentage">Product Percentage</label>
                                     <div class="input-group input-group-merge">
-                                        <input type="number" id="product_percentage" name="product_percentage" class="form-control" required>
+                                        <input type="number" id="percentage" name="percentage" class="form-control" required>
                                         <span class="input-group-text">%</span>
                                     </div>
                                 </div>
@@ -165,8 +165,8 @@
                                     <input type="date" id="purchase_date" name="purchase_date" class="form-control" required>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label" for="product_status">Product Status</label>
-                                    <select id="product_status" name="product_status" class="form-select" required>
+                                    <label class="form-label" for="status">Product Status</label>
+                                    <select id="status" name="status" class="form-select" required>
                                         <option value="">Select an option</option>
                                         @foreach ($product_statuses ?? [] as $id => $name)
                                         <option value="{{ $id }}">{{ $name }}</option>
@@ -239,7 +239,7 @@
         });
         $('#type_of_machine').change(function() {
             var selectedType = $(this).val();
-            var lockDropdown = $('#lock_by');
+            var lockDropdown = $('#network_id');
 
             // Value '4' matches your constant TYPE_OF_MACHINE_SIM_LOCK
             if (selectedType !== '') {
