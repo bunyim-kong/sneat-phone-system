@@ -68,6 +68,7 @@
                                 <div class="col-md-6">
                                     <label class="form-label" for="series">Series</label>
                                     <select id="series" name="series_id" class="form-select" disabled required>
+                                        <option value="">Select an option</option>
                                         @foreach($all_series as $item)
                                             <option value="{{ $item->id }}" data-brand="{{ $item->brand_id }}" class="series-option" style="display: none;">
                                                 {{ $item->name }}
@@ -178,7 +179,7 @@
                         <div class="card-body border-top">
                             <div class="mt-2">
                                 <button type="submit" class="btn btn-primary me-2">{{__('button.save')}}</button>
-                                <button type="reset" class="btn btn-outline-secondary">{{__('button.cancel')}}</button>
+                                <button type="reset" class="btn btn-outline-secondary" onclick="window.location.href='{{ route('products.index', withLang()) }}'">{{__('button.cancel')}}</button>
                             </div>
                         </div>
                     </div>
