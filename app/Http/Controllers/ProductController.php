@@ -109,19 +109,19 @@ class ProductController extends Controller
       $product->brand_id = $request->brand_id;
       $product->series_id = $request->series_id;
       $product->color_id = $request->color_id;
-      $product->model_type_id = $request->model_id;
+      $product->model_type_id = $request->model_type_id;
       $product->condition = $request->condition;
       $product->storage_id = $request->storage_id;
       $product->type_of_machine = $request->type_of_machine;
-      $product->network_id = $request->lock_by ?: null;
+      $product->network_id = $request->network_id ?: null;
       $product->battery_percentage = $request->battery_percentage;
-      $product->percentage = $request->product_percentage;
+      $product->percentage = $request->percentage;
       $product->purchase_price = $request->purchase_price;
       $product->selling_price = $request->selling_price;
       $product->employee_id = Auth::user()->id;
       $product->purchase_date = $request->purchase_date;
       $product->image = '';
-      $product->status = $request->product_status;
+      $product->status = $request->status;
       $product->note = $request->note ?? '';
 
       $product->save();

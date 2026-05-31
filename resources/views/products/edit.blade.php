@@ -35,8 +35,9 @@
                                     {{-- Displays saved image path via Storage or falls back to your generic asset fallback placeholder --}}
                                     <img src="{{ $product->image_name }}"
                                       alt="product-image"
+                                      id="productImagePreview"
                                       class="rounded"
-                                      style="width: 100px; height: 100px; object-fit: cover; border: 1px solid #d9dee3;"
+                                      style="width: 100px; height: 100px; object-fit: cover;"
                                       onError="this.onerror=null;this.src='{{ asset('/assets/img/blank-product.svg') }}';">
                                 </div>
                                 <div class="button-wrapper">
@@ -171,11 +172,11 @@
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label" for="product_percentage">Product Percentage</label>
+                                    <label class="form-label" for="percentage">Product Percentage</label>
                                     <div class="input-group input-group-merge">
-                                        <input type="number" id="product_percentage" name="product_percentage" class="form-control @error('product_percentage') is-invalid @enderror" value="{{ old('product_percentage', $product->percentage) }}">
+                                        <input type="number" id="percentage" name="percentage" class="form-control @error('percentage') is-invalid @enderror" value="{{ old('percentage', $product->percentage) }}">
                                         <span class="input-group-text">%</span>
-                                        @error('product_percentage') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                                        @error('percentage') <div class="invalid-feedback">{{ $message }}</div> @enderror
                                     </div>
                                 </div>
 
