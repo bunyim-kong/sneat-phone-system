@@ -1,10 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" x-data="{ showBrands: false }">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>POS System</title>
+  <title>Order System</title>
+
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs" defer></script>
+
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
@@ -12,27 +16,56 @@
 
 <div class="flex flex-1 overflow-hidden">
 
-  <!-- LEFT SIDEBAR -->
+  <!-- left sidebar -->
   <aside class="w-20 bg-white border-r border-gray-200 flex flex-col items-center py-4 gap-4 flex-shrink-0">
 
-    <div class="w-12 h-12 bg-amber-500 rounded-lg flex items-center justify-center text-white font-bold text-xl mb-4 shadow-sm">
-      <i class="fa-brands fa-apple"></i>
+     <div class="app-brand justify-content-center">
+          <img src="{{ $company->image_logo }}" alt="logo"  class="w-8 h-auto"/>
     </div>
 
-    <button class="w-16 h-16 flex flex-col items-center justify-center rounded-xl bg-blue-600 text-white text-xs font-semibold gap-1">
-      <i class="fa fa-search"></i>
-      Search
+    
+    
+    <!-- Search bar -->
+    <input type="hidden" name="search" value="{{ request('search') }}">
+
+    <!-- phone brand -->
+    <button
+      @click="showBrands = !showBrands"
+      class="w-16 h-16 flex flex-col items-center justify-center rounded-xl bg-blue-600 text-white text-xs font-semibold gap-1"
+    >
+      <i class="fa fa-mobile"></i>
+      Brand
     </button>
 
-    <button class="w-16 h-16 flex flex-col items-center justify-center rounded-xl bg-blue-600 text-white text-xs font-semibold gap-1">
-      <i class="fa fa-mobile"></i>
-      Phones
-    </button>
+    
+    <div x-show="showBrands" x-transition class="flex flex-col gap-2 w-full px-2 mt-2">
+
+      @foreach($brands as $brand)
+        <a href="?brand_id={{ $brand->id }}&search={{ request('search') }}">
+          <button type="button"
+            class="w-full bg-gray-100 hover:bg-blue-500 hover:text-white text-[10px] py-2 rounded-lg transition">
+            {{ $brand->name }}
+          </button>
+        </a>
+      @endforeach
+
+    </div>
 
   </aside>
 
-  <!-- MAIN PRODUCTS -->
+  <!-- all the product -->
   <main class="flex-1 bg-slate-50 p-6 overflow-y-auto">
+
+    <!-- SEARCH BAR -->
+    <form method="GET" class="mb-4">
+      <input
+        type="text"
+        name="search"
+        value="{{ request('search') }}"
+        placeholder="Search product / IMEI..."
+        class="w-full px-4 py-2 rounded-lg border bg-white"
+      >
+    </form>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
 
@@ -68,9 +101,7 @@
                 ${{ $product->selling_price }}
               </span>
 
-              <button
-                class="px-3 py-1 bg-blue-600 text-white text-xs rounded-lg"
-              >
+              <button class="px-3 py-1 bg-blue-600 text-white text-xs rounded-lg">
                 Add
               </button>
             </div>
@@ -79,33 +110,35 @@
         </div>
 
       @empty
-
         <p class="text-gray-500">No products found</p>
-
       @endforelse
 
     </div>
 
   </main>
 
-  <!-- RIGHT CART -->
+  <!-- right cart -->
   <aside class="w-80 bg-white border-l border-gray-200 flex flex-col justify-between">
 
+    <!-- Customer -->
     <div class="p-4 border-b">
-      <h2 class="text-sm font-bold text-gray-500">CUSTOMER</h2>
+      <h2 class="text-sm font-bold text-gray-500 mb-2">CUSTOMER</h2>
 
-      <select class="w-full mt-2 border rounded-lg p-2">
-        <option>Select Customer</option>
+      <select class="w-full bg-slate-50 border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-700">
+        <option value="" disabled selected>Select Customer</option>
+
         @foreach($customers as $id => $name)
           <option value="{{ $id }}">{{ $name }}</option>
         @endforeach
       </select>
     </div>
 
+    <!-- cart -->
     <div class="flex-1 flex items-center justify-center text-gray-400">
       No items in order
     </div>
 
+    <!-- total -->
     <div class="p-4 border-t bg-slate-50">
       <div class="flex justify-between mb-4">
         <span>Total</span>
