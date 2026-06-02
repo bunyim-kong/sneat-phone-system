@@ -34,7 +34,12 @@ class OrderController extends Controller
   {
 
     $parameterNames = [];
+    $customers = Customer::pluck('name', 'id');
+
+    $query = Order::query()->with(['customer', 'employee']);
+
     if ($request->search) {
+
         $filters = $request->only(['customer', 'from_date', 'to_date']);
 
         if (!empty($filters['customer'])) {
@@ -60,12 +65,35 @@ class OrderController extends Controller
 
     $orders = $query->orderBy('order_date', 'desc')->paginate(20);
     session(['printInvoiceId' => null]);
+
     return view('orders.index', compact(
       'orders',
       'customers',
       'parameterNames'
     ));
   }
+    // create function
+    public function create(string $lang)
+    {
+        $customers = Customer::orderBy('name')->get();
+        return view('orders.create', compact('customers'));
+    }
+
+    // store function
+    public function store(Request $request)
+    {
+        $order = Order::create([
+        'customer_id'    => $request->customer_id ?: null,
+        'employee_id'    => Auth::id(),
+        'status'         => Order::STATUS_ACTIVE,
+        'total_amount'   => $request->total_amount,
+        'payment_status' => $request->payment_status,
+        'payment_type'   => $request->payment_type,
+        'note'           => $request->note,
+        'order_date'     => $request->order_date,
+    ]);
+
+    }
 
      /**
      * Display the specified resource.
