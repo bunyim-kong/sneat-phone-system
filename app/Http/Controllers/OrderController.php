@@ -73,36 +73,70 @@ class OrderController extends Controller
     ));
   }
     // create function
-    public function create(string $lang)
-    {
-        $customers = Customer::orderBy('name')->get();
-        return view('orders.create', compact('customers'));
-    }
+    public function create()
+{
+    // 1. FIX CUSTOMER JSON: Pluck only the name and id columns to send a clean array string
+    $customers = \App\Models\Customer::pluck('name', 'id');
+
+    // 2. FIX PRODUCTS NOT SHOWING: Eager load relationships and filter by 'In stock' status
+    // Note: We check for '1' or 1 based on your migration comment: "1:Instock"
+    $products = \App\Models\Product::with(['storage', 'color'])
+        ->where('status', 1)
+        ->orWhere('status', '1')
+        ->get();
+
+    // Debugging Check (Optional):
+    // If your dropdown is STILL empty, uncomment the line below to check if your database actually has in-stock products:
+    // dd($products->toArray());
+
+    // 3. Return the view with the variables matching your Blade file exactly
+    return view('orders.create', compact('customers', 'products'));
+}
 
     // store function
     public function store(Request $request)
-    {
-        $order = Order::create([
+{
+    // 1. Sum up the prices directly from your dynamic HTML items array
+    $calculatedTotal = collect($request->items)->sum('price');
+
+    // 2. Create the order with proper fallback values
+    $order = Order::create([
         'customer_id'    => $request->customer_id ?: null,
         'employee_id'    => Auth::id(),
         'status'         => Order::STATUS_ACTIVE,
-        'total_amount'   => $request->total_amount,
-        'payment_status' => $request->payment_status,
-        'payment_type'   => $request->payment_type,
+
+        // FIXED: Use the calculated total instead of an empty string
+        'total_amount'   => $calculatedTotal,
+
+        // FIXED: Fallback to an integer value (like 1) instead of an empty string ''
+        'payment_status' => $request->payment_status ?? 1,
+        'payment_type'   => $request->payment_type ?? 1,
+
         'note'           => $request->note,
-        'order_date'     => $request->order_date,
+
+        // FIXED: Your HTML form input field is named 'sale_date'
+        'order_date'     => $request->sale_date ?? now(),
     ]);
 
+    // 3. Loop through items to mark selected phone records as 'Sold' (Status 2)
+    if ($request->has('items')) {
+        foreach ($request->items as $productId => $item) {
+            \App\Models\Product::where('id', $productId)->update(['status' => 2]);
+        }
     }
+
+    return redirect()->route('sales.index', withLang())->with('success', 'Sale registered successfully!');
+}
 
      /**
      * Display the specified resource.
      */
     public function show(string $lang, Order $order)
     {
-        $order = $order->with('orderDetails', 'customer', 'employee')->findOrfail($order->id);
-        $order_detals = OrderDetail::where('order_id', $order->id)->with('product')->get();
-        return view('orders.show', compact('order', 'order_detals'));
+        // Fix: Swap 'items' with 'orderDetails' to match your model definition
+        $order->load(['orderDetails.product.storage', 'orderDetails.product.color', 'customer', 'employee']);
+
+        return view('orders.show', compact('order'));
     }
 
 

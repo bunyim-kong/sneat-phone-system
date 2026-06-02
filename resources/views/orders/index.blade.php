@@ -48,7 +48,7 @@
                           <td>{!! '<span class="badge bg-label-info">'.setToStringDateFormat($order->order_date).'</span>'!!}</td>
                           <td>
                               @can('order-list')
-                                <a href="{{ route('sales.show', withLang(['order' => $order->id])) }}" class="btn btn-icon btn-outline-secondary">
+                                <a href="{{ route('sales.show', withLang(['id' => $order->id])) }}" class="btn btn-icon btn-outline-secondary">
                                     <span class="tf-icons bx bx-detail"></span>
                                 </a>
                               @endcan

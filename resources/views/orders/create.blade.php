@@ -1,309 +1,176 @@
 @extends('layouts.app')
 
+@push('styles')
+<style>
+    .table th {
+        font-weight: 600;
+        letter-spacing: 0.05rem;
+        font-size: 0.75rem;
+        color: #566a7f;
+    }
+    .total-label {
+        font-weight: 700;
+        color: #566a7f;
+    }
+</style>
+@endpush
+
 @section('content')
-<div class="container-xxl flex-grow-1 container-p-y">
-  <div class="row">
-    <!-- Left: Product Search & Cart -->
-    <div class="col-md-7">
-      <div class="card mb-4">
-        <div class="card-header d-flex align-items-center justify-content-between">
-          <h5 class="mb-0">{{ __('sidebar.shop.orders.title') }}</h5>
-          <span class="badge bg-label-primary" id="cart-count">0 items</span>
+<div class="container-fluid flex-grow-1 container-p-y">
+    <form id="formRegisterSale" method="POST" action="{{ route('sales.store', withLang()) }}">
+        @csrf
+
+        <div class="card mb-4">
+            <h5 class="card-header text-primary" style="font-size: 1.15rem;">Register Sale</h5>
+
+            <div class="card-body">
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label" for="sale_date">SALE DATE</label>
+                        <input type="date" id="sale_date" name="sale_date" class="form-control @error('sale_date') is-invalid @enderror" value="{{ old('sale_date', date('Y-m-d')) }}" required>
+                        @error('sale_date') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label" for="customer_id">CUSTOMER</label>
+                        <select id="customer_id" name="customer_id" class="form-select @error('customer_id') is-invalid @enderror" required>
+                            <option value="">Select Customer</option>
+                            @foreach($customers as $id => $name)
+                                <option value="{{ $id }}" {{ old('customer_id') == $id ? 'selected' : '' }}>
+                                    {{ $name }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('customer_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-md-12">
+                        <label class="form-label" for="product_selector">PRODUCT NAME</label>
+                        <select id="product_selector" class="form-select">
+                            <option value="">Select Order Product</option>
+                            @foreach($products ?? [] as $product)
+                                <option value="{{ $product->id }}"
+                                        data-name="{{ $product->product_name }}"
+                                        data-imei="{{ $product->product_imei }}"
+                                        data-price="{{ $product->selling_price }}"
+                                        data-detail="{{ $product->condition == 1 ? 'Used' : 'New' }} &bull; {{ $product->storage?->name ?? 'N/A' }} &bull; {{ $product->color?->name ?? 'N/A' }}">
+                                    {{ $product->product_name }} [IMEI: {{ $product->product_imei }}] - ${{ number_format($product->selling_price, 2) }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
+                <div class="table-responsive border rounded mb-4">
+                    <table class="table table-striped align-middle mb-0" id="salesItemsTable">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 20%;">PRODUCT IMEI</th>
+                                <th style="width: 25%;">PRODUCT NAME</th>
+                                <th style="width: 30%;">PRODUCT DETAIL</th>
+                                <th style="width: 15%;">PRICE ($)</th>
+                                <th style="width: 10%; text-align: center;">ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="invoiceTableBody">
+                            <tr id="noDataRow">
+                                <td colspan="5" class="text-center text-muted py-5 text-uppercase fw-semibold" style="letter-spacing: 0.05rem;">
+                                    No Data Available
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="row justify-content-end mb-4">
+                    <div class="col-md-4 text-end d-flex justify-content-end gap-5 align-items-center pe-4">
+                        <span class="total-label text-uppercase">Total :</span>
+                        <h4 class="mb-0 fw-bold text-dark" id="grandTotalDisplay">$ 0.00</h4>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-12">
+                        <label class="form-label text-uppercase text-xs" for="note">Note</label>
+                        <textarea class="form-control" id="note" name="note" rows="4" placeholder="{{ old('note') }}"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body border-top">
+                <div class="mt-2">
+                    <button type="submit" class="btn btn-primary me-2" id="submitInvoiceBtn" disabled>Submit Order</button>
+                    <a href="{{ route('sales.index', withLang()) }}" class="btn btn-outline-secondary">Cancel</a>
+                </div>
+            </div>
         </div>
-        <div class="card-body">
-          <!-- Search -->
-          <div class="mb-3">
-            <div class="input-group">
-              <span class="input-group-text"><i class="bx bx-search"></i></span>
-              <input type="text" id="product-search" class="form-control" placeholder="Search by IMEI, name, code...">
-            </div>
-          </div>
-          <!-- Product Results -->
-          <div id="product-results" class="row g-2 mb-3" style="max-height:320px; overflow-y:auto;">
-            <div class="col-12 text-center text-muted py-4">
-              <i class="bx bx-search-alt fs-1"></i>
-              <p class="mt-2">Search for a product to add</p>
-            </div>
-          </div>
-          <hr>
-          <!-- Cart Table -->
-          <h6 class="mb-3">Cart</h6>
-          <div class="table-responsive">
-            <table class="table table-bordered">
-              <thead class="table-light">
-                <tr>
-                  <th>#</th>
-                  <th>Product</th>
-                  <th>IMEI</th>
-                  <th>Price ($)</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody id="cart-body">
-                <tr id="cart-empty-row">
-                  <td colspan="5" class="text-center text-muted py-3">No items in cart</td>
-                </tr>
-              </tbody>
-              <tfoot>
-                <tr class="table-light fw-bold">
-                  <td colspan="3" class="text-end">Total:</td>
-                  <td id="cart-total">$0.00</td>
-                  <td></td>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Right: Order Info & Submit -->
-    <div class="col-md-5">
-      <div class="card">
-        <div class="card-header">
-          <h5 class="mb-0">Order Details</h5>
-        </div>
-        <div class="card-body">
-          <form action="{{ route('sales.store', withLang()) }}" method="POST" id="sale-form">
-            @csrf
-
-            <!-- Hidden product ids -->
-            <div id="product-ids-container"></div>
-
-            <!-- Customer -->
-            <div class="mb-3">
-              <label class="form-label">{{ __('customer.menu.title') }}</label>
-              <select name="customer_id" class="form-select" id="customer-select">
-                <option value="">-- Walk-in Customer --</option>
-                @foreach($customers as $customer)
-                  <option value="{{ $customer->id }}">{{ $customer->name }} ({{ $customer->phone }})</option>
-                @endforeach
-              </select>
-            </div>
-
-            <!-- Order Date -->
-            <div class="mb-3">
-              <label class="form-label">Order Date</label>
-              <input type="date" name="order_date" class="form-control" value="{{ date('Y-m-d') }}" required>
-            </div>
-
-            <!-- Payment Type -->
-            <div class="mb-3">
-              <label class="form-label">Payment Type</label>
-              <select name="payment_type" class="form-select" required>
-                <option value="1">Cash</option>
-                <option value="2">Bank</option>
-                <option value="3">Other</option>
-              </select>
-            </div>
-
-            <!-- Payment Status -->
-            <div class="mb-3">
-              <label class="form-label">Payment Status</label>
-              <select name="payment_status" class="form-select" required>
-                <option value="1">Paid</option>
-                <option value="2">Unpaid</option>
-              </select>
-            </div>
-
-            <!-- Discount -->
-            <div class="mb-3">
-              <label class="form-label">Discount ($)</label>
-              <input type="number" name="discount" id="discount" class="form-control" value="0" min="0" step="0.01">
-            </div>
-
-            <!-- Note -->
-            <div class="mb-3">
-              <label class="form-label">Note</label>
-              <textarea name="note" class="form-control" rows="2"></textarea>
-            </div>
-
-            <!-- Summary -->
-            <div class="alert alert-light border mb-3">
-              <div class="d-flex justify-content-between">
-                <span>Subtotal:</span>
-                <strong id="summary-subtotal">$0.00</strong>
-              </div>
-              <div class="d-flex justify-content-between">
-                <span>Discount:</span>
-                <strong id="summary-discount">$0.00</strong>
-              </div>
-              <hr class="my-2">
-              <div class="d-flex justify-content-between fs-5">
-                <span>Grand Total:</span>
-                <strong id="summary-total" class="text-primary">$0.00</strong>
-              </div>
-              <!-- Hidden total sent to server -->
-              <input type="hidden" name="total_amount" id="input-total">
-            </div>
-
-            <div class="d-grid gap-2">
-              <button type="submit" class="btn btn-primary" id="submit-btn" disabled>
-                <i class="bx bx-cart-alt me-1"></i> Place Order
-              </button>
-              <a href="{{ route('sales.index', withLang()) }}" class="btn btn-outline-secondary">Cancel</a>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
+    </form>
 </div>
 @endsection
 
-@push('scripts')
+@push('script')
 <script>
-  let cart = []; // { id, name, imei, price }
+$(document).ready(function() {
+    // Dropdown selection rule
+    $('#product_selector').change(function() {
+        let option = $(this).find('option:selected');
+        let id = option.val();
+        if (!id) return;
 
-  // ── Product Search ──────────────────────────────────────────
-  let searchTimeout;
-  document.getElementById('product-search').addEventListener('input', function () {
-    clearTimeout(searchTimeout);
-    const q = this.value.trim();
-    if (q.length < 2) {
-      document.getElementById('product-results').innerHTML = `
-        <div class="col-12 text-center text-muted py-4">
-          <i class="bx bx-search-alt fs-1"></i>
-          <p class="mt-2">Search for a product to add</p>
-        </div>`;
-      return;
-    }
-    searchTimeout = setTimeout(() => searchProducts(q), 300);
-  });
+        // Check if row already exists in the DOM directly instead of using arrays
+        if ($(`#row-${id}`).length > 0) {
+            alert("This item with IMEI: " + option.data('imei') + " is already in the invoice list.");
+            $(this).val('');
+            return;
+        }
 
-  function searchProducts(q) {
-    document.getElementById('product-results').innerHTML = `
-      <div class="col-12 text-center py-3">
-        <div class="spinner-border spinner-border-sm text-primary"></div> Searching...
-      </div>`;
+        $('#noDataRow').hide();
 
-    fetch(`{{ url('/') }}/{{ app()->getLocale() }}/products/search?q=${encodeURIComponent(q)}`, {
-      headers: { 'X-Requested-With': 'XMLHttpRequest' }
-    })
-    .then(r => r.json())
-    .then(data => renderProductResults(data))
-    .catch(() => {
-      document.getElementById('product-results').innerHTML =
-        `<div class="col-12 text-danger">Error loading products.</div>`;
+        // Simplified template input names using [id] avoids complex array reindexing logic entirely
+        let newRow = `
+            <tr id="row-${id}" class="invoice-item-row">
+                <td><strong>${option.data('imei')}</strong></td>
+                <td><strong>${option.data('name')}</strong></td>
+                <td><span class="text-muted">${option.data('detail')}</span></td>
+                <td>
+                    <span class="fw-semibold item-price-val" data-raw-price="${option.data('price')}">$ ${parseFloat(option.data('price')).toFixed(2)}</span>
+                    <input type="hidden" name="items[${id}][product_id]" value="${id}">
+                    <input type="hidden" name="items[${id}][price]" value="${option.data('price')}">
+                </td>
+                <td class="text-center">
+                    <button type="button" class="btn btn-sm btn-icon btn-outline-danger border-0 remove-invoice-item">
+                        <i class='bx bx-trash fs-5'></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+
+        $('#invoiceTableBody').append(newRow);
+        $(this).val('');
+        recalculateInvoiceTotals();
     });
-  }
 
-  function renderProductResults(products) {
-    const container = document.getElementById('product-results');
-    if (!products.length) {
-      container.innerHTML = `<div class="col-12 text-center text-muted py-3">No available products found.</div>`;
-      return;
+    // Cleaned up delete action logic
+    $(document).on('click', '.remove-invoice-item', function() {
+        $(this).closest('tr').remove();
+        recalculateInvoiceTotals();
+    });
+
+    // Streamlined loop calculation rule
+    function recalculateInvoiceTotals() {
+        let runningSum = 0;
+        let rows = $('.item-price-val');
+
+        rows.each(function() {
+            runningSum += parseFloat($(this).data('raw-price'));
+        });
+
+        $('#noDataRow').toggle(rows.length === 0);
+        $('#submitInvoiceBtn').prop('disabled', rows.length === 0);
+        $('#grandTotalDisplay').text('$ ' + runningSum.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
     }
-    container.innerHTML = products.map(p => `
-      <div class="col-12">
-        <div class="d-flex align-items-center justify-content-between border rounded px-3 py-2 mb-1 bg-light">
-          <div>
-            <div class="fw-semibold">${p.product_name}</div>
-            <small class="text-muted">IMEI: ${p.product_imei ?? '-'} &nbsp;|&nbsp; $${parseFloat(p.selling_price).toFixed(2)}</small>
-          </div>
-          <button type="button" class="btn btn-sm btn-primary" onclick="addToCart(${p.id}, '${escHtml(p.product_name)}', '${escHtml(p.product_imei ?? '')}', ${p.selling_price})">
-            <i class="bx bx-plus"></i>
-          </button>
-        </div>
-      </div>
-    `).join('');
-  }
-
-  // ── Cart Logic ───────────────────────────────────────────────
-  function addToCart(id, name, imei, price) {
-    if (cart.find(i => i.id === id)) {
-      alert('This product is already in the cart.');
-      return;
-    }
-    cart.push({ id, name, imei, price: parseFloat(price) });
-    renderCart();
-  }
-
-  function removeFromCart(id) {
-    cart = cart.filter(i => i.id !== id);
-    renderCart();
-  }
-
-  function renderCart() {
-    const tbody = document.getElementById('cart-body');
-    const emptyRow = document.getElementById('cart-empty-row');
-
-    if (!cart.length) {
-      tbody.innerHTML = `<tr id="cart-empty-row"><td colspan="5" class="text-center text-muted py-3">No items in cart</td></tr>`;
-      updateSummary(0);
-      updateHiddenInputs();
-      document.getElementById('submit-btn').disabled = true;
-      document.getElementById('cart-count').textContent = '0 items';
-      return;
-    }
-
-    tbody.innerHTML = cart.map((item, idx) => `
-      <tr>
-        <td>${idx + 1}</td>
-        <td>${item.name}</td>
-        <td><small>${item.imei || '-'}</small></td>
-        <td>
-          <input type="number" class="form-control form-control-sm" style="width:100px"
-            value="${item.price.toFixed(2)}" min="0" step="0.01"
-            onchange="updatePrice(${item.id}, this.value)">
-        </td>
-        <td>
-          <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeFromCart(${item.id})">
-            <i class="bx bx-trash"></i>
-          </button>
-        </td>
-      </tr>
-    `).join('');
-
-    const subtotal = cart.reduce((s, i) => s + i.price, 0);
-    updateSummary(subtotal);
-    updateHiddenInputs();
-    document.getElementById('submit-btn').disabled = false;
-    document.getElementById('cart-count').textContent = `${cart.length} item${cart.length > 1 ? 's' : ''}`;
-  }
-
-  function updatePrice(id, value) {
-    const item = cart.find(i => i.id === id);
-    if (item) item.price = parseFloat(value) || 0;
-    const subtotal = cart.reduce((s, i) => s + i.price, 0);
-    updateSummary(subtotal);
-    updateHiddenInputs();
-  }
-
-  function updateSummary(subtotal) {
-    const discount = parseFloat(document.getElementById('discount').value) || 0;
-    const grand = Math.max(0, subtotal - discount);
-    document.getElementById('cart-total').textContent = `$${subtotal.toFixed(2)}`;
-    document.getElementById('summary-subtotal').textContent = `$${subtotal.toFixed(2)}`;
-    document.getElementById('summary-discount').textContent = `$${discount.toFixed(2)}`;
-    document.getElementById('summary-total').textContent = `$${grand.toFixed(2)}`;
-    document.getElementById('input-total').value = grand.toFixed(2);
-  }
-
-  function updateHiddenInputs() {
-    const container = document.getElementById('product-ids-container');
-    container.innerHTML = cart.map(item =>
-      `<input type="hidden" name="product_ids[]" value="${item.id}">
-       <input type="hidden" name="unit_prices[]" value="${item.price.toFixed(2)}">`
-    ).join('');
-  }
-
-  // Recalculate when discount changes
-  document.getElementById('discount').addEventListener('input', function () {
-    const subtotal = cart.reduce((s, i) => s + i.price, 0);
-    updateSummary(subtotal);
-  });
-
-  // ── Form Validation ──────────────────────────────────────────
-  document.getElementById('sale-form').addEventListener('submit', function (e) {
-    if (!cart.length) {
-      e.preventDefault();
-      alert('Please add at least one product to the cart.');
-    }
-  });
-
-  function escHtml(str) {
-    return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[s]));
-  }
+});
 </script>
 @endpush
