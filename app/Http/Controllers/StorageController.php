@@ -76,7 +76,7 @@ class StorageController extends Controller
         $validatedData = $request->validate([
             'name' => 'required|string|max:25|unique:storages,name',
         ]);
-        $storage = new storage();
+        $storage = Storage::findOrFail($request->id);
         $storage->name = $request->name;
         $storage->save();
         return redirect()->route('storage.index', withLang());

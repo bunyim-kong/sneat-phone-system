@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
 {
+    // SOFTDELETE HERE!!
     use HasFactory, SoftDeletes;
 
     const CONDITION = [
@@ -39,6 +40,13 @@ class Product extends Model
     const STATUS_LOAN = 'Loan';
     const STATUS_BROKEN = 'Broken';
 
+    const STATUS_OPTION = [
+      self::STATUS_ID_AVAILABLE => self::STATUS_AVAILABLE,
+      self::STATUS_ID_SOLD => self::STATUS_SOLD,
+      self::STATUS_ID_BROKEN => self::STATUS_BROKEN,
+      self::STATUS_ID_LOAN => self::STATUS_LOAN,
+    ];
+
     public static function getStatuses()
     {
         return [
@@ -59,7 +67,7 @@ class Product extends Model
       'condition',
       'storage_id',
       'type_of_machine',
-      'newtwork',
+      'network_id',
       'battery_percentage',
       'percentage',
       'purchase_price',
@@ -67,8 +75,9 @@ class Product extends Model
       'employee_id',
       'purchase_date',
       'status',
+      'image',
       'note'
-  ];
+    ];
 
     protected $dates = ['purchase_date', 'deleted_at'];
 

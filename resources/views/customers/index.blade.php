@@ -139,8 +139,8 @@
                                 <label for="gender" class="form-label">Gender</label>
                                 <select id="gender" class="select2 form-select" name="gender">
                                     <option value="">{{ __('common.lbl_select')}}</option>
-                                    <option value="1">Normal</option>
-                                    <option value="2">Loan</option>
+                                    <option value="1">Male</option>
+                                    <option value="2">Female</option>
                                 </select>
                             </div>
                         </div>

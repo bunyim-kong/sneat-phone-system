@@ -12,7 +12,6 @@ use App\Models\Storage;
 use App\Http\Requests\ProductRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\File;
 
 class ProductController extends Controller
 {
@@ -85,7 +84,17 @@ class ProductController extends Controller
      */
     public function create()
     {
-      
+      $brands = Brand::all();
+      $all_series = Series::all();
+      $colors = Color::all();
+      $models = ModelType::all();
+      $storages = Storage::all();
+      $type_of_machines = Product::TYPE_OF_MACHINE;
+      $lock_types = Network::all();
+      $condition = Product::CONDITION;
+      $product_statuses = Product::STATUS_OPTION;
+
+      return view('products.create', compact('brands','all_series', 'colors', 'models', 'storages', 'type_of_machines', 'lock_types', 'condition', 'product_statuses'));
     }
 
     /**
@@ -97,14 +106,14 @@ class ProductController extends Controller
       $product->product_code = $request->product_code ?? '';
       $product->product_name = $request->product_name;
       $product->product_imei = $request->product_imei;
-      $product->brand_id = $request->brand;
-      $product->series_id = $request->series;
-      $product->color_id = $request->color;
-      $product->model_type_id = $request->model_type;
+      $product->brand_id = $request->brand_id;
+      $product->series_id = $request->series_id;
+      $product->color_id = $request->color_id;
+      $product->model_type_id = $request->model_type_id;
       $product->condition = $request->condition;
-      $product->storage_id = $request->storage;
+      $product->storage_id = $request->storage_id;
       $product->type_of_machine = $request->type_of_machine;
-      $product->network_id = $request->network;
+      $product->network_id = $request->network_id ?: null;
       $product->battery_percentage = $request->battery_percentage;
       $product->percentage = $request->percentage;
       $product->purchase_price = $request->purchase_price;
@@ -116,7 +125,7 @@ class ProductController extends Controller
       $product->note = $request->note ?? '';
 
       $product->save();
-      if ($image = $request->file('image')) {
+      if ($image = $request->file('product_image')) {
         $destinationPath = 'images/product/';
         $formattedNumber = str_pad($product->id, 5, '0', STR_PAD_LEFT);
         $filename = $image->getClientOriginalName();
@@ -126,7 +135,7 @@ class ProductController extends Controller
         $product->save();
       }
        // Optionally, you can return a response to indicate success or redirect to a different page.
-      return redirect()->route('products.show', withLang(['product' => $product->id]));
+      return redirect()->route('products.index', withLang());
     }
 
     /**
@@ -134,8 +143,8 @@ class ProductController extends Controller
      */
     public function show(string $lang, Product $product)
     {
-      $product = $product->with('brand', 'series', 'color', 'modelType', 'storage')->findOrfail($product->id);
-      return view('products.show', ['product' => $product]);
+      $product->load('brand', 'series', 'color', 'modelType', 'storage');
+      return view('products.show', compact('product'));
     }
 
     /**
@@ -143,7 +152,33 @@ class ProductController extends Controller
      */
     public function edit(string $lang, Product $product)
     {
-      
+      $brands = Brand::all();
+      $colors = Color::all();
+      $models = ModelType::all();
+      $storages = Storage::all();
+
+      $all_series = Series::all();
+
+      $condition = Product::CONDITION;
+
+      $type_of_machines = Product::TYPE_OF_MACHINE;
+
+      $lock_types = Network::all();
+
+      $product_statuses = Product::STATUS_OPTION;
+
+      return view('products.edit', compact(
+          'product',
+          'brands',
+          'colors',
+          'models',
+          'storages',
+          'all_series',
+          'condition',
+          'type_of_machines',
+          'lock_types',
+          'product_statuses'
+      ));
     }
 
     /**
@@ -151,7 +186,38 @@ class ProductController extends Controller
      */
     public function update(ProductRequest $request, string $lang, Product $product)
     {
-      
+        // 1. Get all input data except internal tokens
+        $data = $request->except(['_token', '_method']);
+
+        // 2. Handle the file upload matching your store method logic
+        if ($image = $request->file('product_image')) {
+
+            $destinationPath = 'images/product/';
+
+            // Delete the old file from the public directory if it exists
+            if ($product->image && file_exists(public_path($destinationPath . $product->image))) {
+                unlink(public_path($destinationPath . $product->image));
+            }
+
+            // Generate a clean unique filename (matching your store format)
+            $formattedNumber = str_pad($product->id, 5, '0', STR_PAD_LEFT);
+            $filename = $image->getClientOriginalName();
+            $productImage = $formattedNumber . "_" . md5($filename . time()) . "." . $image->getClientOriginalExtension();
+
+            // Move file directly to public/images/product/
+            $image->move($destinationPath, $productImage);
+
+            // Assign the clean filename string to the database payload
+            $data['image'] = $productImage;
+        }
+
+        // 3. Update the database record cleanly
+        $product->update($data);
+
+        // 4. Redirect with flash message
+        return redirect()
+            ->route('products.index', ['lang' => $lang])
+            ->with('success', __('Product updated successfully.'));
     }
 
     public function getSeriesBybrand(string $lang, string $id)

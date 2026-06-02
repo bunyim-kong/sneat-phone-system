@@ -1,27 +1,29 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\HomeController;
-use App\Http\Controllers\RoleController;
-use App\Http\Controllers\EmployeeController;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\UserController;
-use App\Http\Controllers\OrderController;
+use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CartController;
-use App\Http\Controllers\ExpenseController;
+use App\Http\Controllers\ColorController;
+use App\Http\Controllers\CompanySettingController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\ExpenseCategoryController;
+use App\Http\Controllers\ExpenseController;
+use App\Http\Controllers\GurantorController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LoanController;
 use App\Http\Controllers\LoanPaymentController;
-use App\Http\Controllers\ReportController;
-use App\Http\Controllers\CompanySettingController;
 use App\Http\Controllers\ModelTypeController;
-use App\Http\Controllers\SerialController;
-use App\Http\Controllers\BrandController;
-use App\Http\Controllers\StorageController;
-use App\Http\Controllers\ColorController;
-use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\NetworkController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\SerialController;
+use App\Http\Controllers\StorageController;
+use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\OrderCustomersController;
 
 /*
 |--------------------------------------------------------------------------
@@ -75,13 +77,17 @@ Route::group([
         Route::get('/profile/edit/password', [UserController::class, 'editPassword'])->name('edit.profile.password');
         Route::post('/profile/update/password', [UserController::class, 'updatePassword'])->name('update.profile.password');
     });
+
+     Route::get('/ordercustomers', [OrderCustomersController::class, 'index'])
+    ->name('ordercustomers.index');
+
     Route::group(['prefix'=>'order','as'=>'orders.'], function(){
       Route::get('/', [OrderController::class, 'index'])->name('index');
+      Route::get('/create', [OrderController::class, 'create'])->name('create');
     });
     Route::group(['prefix'=>'sale','as'=>'sales.'], function(){
       Route::get('/', [OrderController::class, 'index'])->name('index');
       Route::get('/create', [OrderController::class, 'create'])->name('create');
-     
     });
     Route::group(['prefix'=>'cart','as'=>'carts.'], function(){
       Route::post('/store', [CartController::class, 'store'])->name('store');
@@ -189,3 +195,4 @@ Route::group([
     Route::put('company/', [CompanySettingController::class, 'update'])->name('company.update');
 });
 
+Route::resource('/roles/show', RoleController::class);
