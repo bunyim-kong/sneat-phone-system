@@ -68,13 +68,13 @@
                                         <div class="row">
                                             <div class="col mb-3">
                                                 <label for="name" class="form-label">{{__('category.series.product_series')}}</label>
-                                                <input type="text" id="name" name="name" class="form-control" placeholder="Ex: iPhone 13, 14, 14 Pro">
+                                                <input type="text" id="name" name="name" class="form-control" placeholder="Ex: iPhone 13, 14, 14 Pro" required>
                                             </div>
                                         </div>
 
                                         <div class="mb-3 col-md-6">
                                             <label class="form-label" for="brand">{{__('product.brand')}}</label>
-                                            <select id="brand" class="select2 form-select @error('brand') is-invalid @enderror" name="brand">
+                                            <select id="brand" class="select2 form-select @error('brand') is-invalid @enderror" name="brand" required>
                                                 <option value="">{{__('category.pick')}}</option>
                                                 @foreach ($brands as $key => $value)
                                                     <option value="{{ $key }}" @if(old('brand') == $key) selected @endif>{{ $value }}</option>
