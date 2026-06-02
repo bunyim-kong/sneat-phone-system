@@ -75,6 +75,7 @@ class Product extends Model
       'employee_id',
       'purchase_date',
       'status',
+      'image',
       'note'
     ];
 

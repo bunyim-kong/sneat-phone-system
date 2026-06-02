@@ -185,29 +185,40 @@ class ProductController extends Controller
      * Update the specified resource in storage.
      */
     public function update(ProductRequest $request, string $lang, Product $product)
-  {
-      // 1. Retrieve the validated data from your ProductRequest
-      $validatedData = $request->validated();
+    {
+        // 1. Get all input data except internal tokens
+        $data = $request->except(['_token', '_method']);
 
-      // 2. (Optional) Handle file/image uploads if they exist in the request
-      if ($request->hasFile('image')) {
-          // Delete old image if necessary, then store the new one
-          // $validatedData['image'] = $request->file('image')->store('products', 'public');
-      }
+        // 2. Handle the file upload matching your store method logic
+        if ($image = $request->file('product_image')) {
 
-      // 3. Update the product
-      // If you are using standard columns:
-      $product->update($validatedData);
+            $destinationPath = 'images/product/';
 
-      // OR if you are using a translation package where you set the locale first:
-      // app()->setLocale($lang);
-      // $product->update($validatedData);
+            // Delete the old file from the public directory if it exists
+            if ($product->image && file_exists(public_path($destinationPath . $product->image))) {
+                unlink(public_path($destinationPath . $product->image));
+            }
 
-      // 4. Redirect the user back with a success flash message
-      return redirect()
-          ->route('products.index', ['lang' => $lang])
-          ->with('success', __('Product updated successfully.'));
-  }
+            // Generate a clean unique filename (matching your store format)
+            $formattedNumber = str_pad($product->id, 5, '0', STR_PAD_LEFT);
+            $filename = $image->getClientOriginalName();
+            $productImage = $formattedNumber . "_" . md5($filename . time()) . "." . $image->getClientOriginalExtension();
+
+            // Move file directly to public/images/product/
+            $image->move($destinationPath, $productImage);
+
+            // Assign the clean filename string to the database payload
+            $data['image'] = $productImage;
+        }
+
+        // 3. Update the database record cleanly
+        $product->update($data);
+
+        // 4. Redirect with flash message
+        return redirect()
+            ->route('products.index', ['lang' => $lang])
+            ->with('success', __('Product updated successfully.'));
+    }
 
     public function getSeriesBybrand(string $lang, string $id)
   {

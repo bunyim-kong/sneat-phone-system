@@ -44,13 +44,12 @@
                                     <label for="upload_image" class="btn btn-primary me-2 mb-2" tabindex="0">
                                         <span class="d-none d-sm-block">Upload new photo</span>
                                         <i class="bx bx-upload d-block d-sm-none"></i>
-                                        <input type="file" id="upload_image" name="product_image" class="account-file-input" hidden accept="image/png, image/jpeg, image/gif">
+                                        <input type="file" id="upload_image" name="product_image" class="account-file-input" hidden accept="image/png, image/jpeg, image/gif, image/jpg">
                                     </label>
-                                    <button type="reset" class="btn btn-outline-secondary account-image-reset mb-2" id="resetImage">
+                                    <button type="button" class="btn btn-outline-secondary account-image-reset mb-2" id="resetImage">
                                         <span>Reset</span>
                                     </button>
                                     <p class="text-muted mb-0" style="font-size: 0.8rem;">Allowed JPG, GIF or PNG.</p>
-                                    @error('product_image') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
                                 </div>
                             </div>
 
@@ -233,6 +232,7 @@
 <script>
     $(document).ready(function() {
         const defaultImg = $('#productImagePreview').attr('src');
+        console.log(defaultImg);
 
         // Initial setup for populated Edit forms
         function initializeDependentFields() {
@@ -272,7 +272,9 @@
         // Handling live client-side image preview
         $("#upload_image").on("change", function(e){
             var file = e.target.files[0];
+
             if (file) {
+
                 getBase64(file).then(base64Data => {
                     $('#productImagePreview').attr('src', base64Data);
                 });

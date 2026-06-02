@@ -39,7 +39,7 @@ class ProductRequest extends FormRequest
         'selling_price' => 'numeric',
         'purchase_date' => 'required|date',
         'status' => 'required|integer|in:1,2,3,4',
-        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        'product_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         'note' => 'nullable|string',
     ];
     }
