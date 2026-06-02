@@ -33,6 +33,7 @@ return new class extends Migration
             $table->string('status')->default(1)->comment('1:Instock, 2:Sold, 3:Load, 4:Broken');
             $table->string('image', 500)->nullable();
             $table->text('note')->nullable();
+            // SOFTDELETE HERE!!
             $table->softDeletes();
             $table->timestamps();
         });
