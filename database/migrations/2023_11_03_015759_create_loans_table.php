@@ -30,6 +30,7 @@ return new class extends Migration
             $table->date('next_payment_date')->format('d/m/Y')->nullable();
             $table->string('file')->nullable();
             $table->text('note')->nullable();
+            $table->string('phone_profit');
             $table->softDeletes();
             $table->timestamps();
         });
