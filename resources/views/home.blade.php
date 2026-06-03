@@ -270,7 +270,7 @@
                                       <td>{!! $order->payment_type_badges ?? '' !!}</td>
                                       @can('order-list')
                                       <td>
-                                          <a href="{{ route('sales.show', withLang(['order' => $order->id])) }}" class="btn btn-icon btn-outline-secondary">
+                                          <a href="{{ route('sales.show', withLang(['id' => $order->id])) }}" class="btn btn-icon btn-outline-secondary">
                                               <i class="fa-solid fa-receipt"></i>
                                           </a>
                                       </td>
