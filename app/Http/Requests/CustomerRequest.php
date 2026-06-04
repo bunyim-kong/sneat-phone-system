@@ -22,19 +22,11 @@ class CustomerRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'id_card_number' => 'required|string|min:9',
             'name' => 'required|string|max:255',
-            'latin_name' => 'required|string|max:255',
-            'district' => 'required|string|max:255',
-            'commune' => 'required|string|max:255',
-            'province' => 'required|string|max:255',
-            'gender' => 'required|in:1,2',
-            'nationality' => 'required|string|max:255',
-            'family_status' => 'required|in:1,2',
-            'dob' => 'required|date',
-            'housing_ownership_type' => 'required|in:1,2,3,4,5',
-            'phone' => 'required|string|max:20',
-            'customer_type' => 'required|in:1,2',
+            'phone' => 'required|string|max:50',
+            'customer_type' => 'required|integer',
+            'gender' => 'required|integer',
+            'nationality' => 'required|integer'
         ] ;
         // Check if customer_type is Corporate (value 2)
         if ($this->input('customer_type') == 2) {

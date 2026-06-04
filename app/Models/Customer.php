@@ -13,7 +13,7 @@ class Customer extends Model
     const STATUS_NORMAL = 1;
     const STATUS_LOAN = 2;
 
-    protected $fillable = 
+    protected $fillable =
     [
       'id_card_number',
       'name',
@@ -78,5 +78,10 @@ class Customer extends Model
     public function loanPayments()
     {
         return $this->hasManyThrough(LoanPayment::class, Loan::class);
+    }
+
+    public function orders()
+    {
+      return $this->hasMany(Order::class);
     }
 }

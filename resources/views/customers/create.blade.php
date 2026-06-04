@@ -21,7 +21,9 @@
                         <div class="card-body">
                             <div class="mt-2">
                                 <button type="submit" class="btn btn-primary me-2">{{__('button.save')}}</button>
-                                <button type="reset" class="btn btn-outline-secondary">{{__('button.cancel')}}</button>
+                                <a href="{{ route('customers.index', withLang()) }}" class="btn btn-outline-secondary">
+                                    {{ __('button.cancel') }}
+                                </a>
                             </div>
                         </div>
                     </div>

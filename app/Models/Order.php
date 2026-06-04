@@ -32,7 +32,7 @@ class Order extends Model
       'order_date'
   ];
 
-    protected $dates = 
+    protected $dates =
     [
       'order_date',
       'deleted_at',
@@ -50,7 +50,7 @@ class Order extends Model
 
     public function customer()
     {
-        return $this->hasOne(Customer::class, 'id', 'customer_id');
+        return $this->belongsTo(Customer::class, 'customer_id');
     }
 
     public function getIdNumberAttribute()

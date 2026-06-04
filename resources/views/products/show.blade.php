@@ -28,7 +28,7 @@
                     <img src="{{ $product->image_name }}"
                          alt="product-image"
                          class="rounded"
-                         style="width: 100px; height: 100px; object-fit: cover;"
+                         style="width: 100px; height: 100px; object-fit: contain;"
                          onError="this.onerror=null;this.src='{{ asset('/assets/img/blank-product.svg') }}';">
                 </div>
 

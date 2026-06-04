@@ -159,9 +159,12 @@ class OrderController extends Controller
 
     public function destroy(string $lang, Order $order)
     {
-        $orderDetial = OrderDetail::where('order_id', $order->id)->get();
+        $productIds = $order->orderDetails->pluck('product_id')->filter();
+        Product::whereIn('id', $productIds)->update(['status' => 1]);
 
-      return redirect()->route('sales.index', withLang())->with('success', 'Sale deleted successfully');
+        $order->delete();
+
+        return redirect()->route('sales.index', withLang())->with('success', 'Sale deleted successfully');
     }
 
      /**

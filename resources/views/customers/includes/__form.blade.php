@@ -1,7 +1,7 @@
 <div class="card-body">
     <div class="d-flex align-items-start align-items-sm-center gap-4">
         <img
-            src="{{ isset($customer->profile_image) ? $customer->profile_image : asset('/assets/img/blank-profile.png') }}"
+            src="{{ $customer->profile_image ?? asset('/assets/img/blank-profile.png') }}"
             alt="user-avatar"
             class="d-block rounded"
             height="100"
@@ -9,7 +9,7 @@
             id="uploadedAvatar"
             onError="this.onerror=null;this.src='{{ asset('/assets/img/blank-profile.png') }}';"
         />
-        <input type="hidden" value="{{ isset($customer->profile_image) ? $customer->profile_image : asset('/assets/img/blank-profile.png') }}" class="mediaUserdata" />
+        <input type="hidden" value="{{ $customer->profile_image ?? asset('/assets/img/blank-profile.png') }}" class="mediaUserdata" />
         <div class="button-wrapper">
             <label for="upload" class="btn btn-primary me-2 mb-4" tabindex="0">
                 <span class="d-none d-sm-block">{{__('button.upload_new_photo')}}</span>

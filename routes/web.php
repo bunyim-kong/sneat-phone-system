@@ -78,8 +78,9 @@ Route::group([
         Route::post('/profile/update/password', [UserController::class, 'updatePassword'])->name('update.profile.password');
     });
 
-     Route::get('/ordercustomers', [OrderCustomersController::class, 'index'])
+     Route::get('/order-customers', [OrderCustomersController::class, 'index'])
     ->name('ordercustomers.index');
+    Route::post('/order-customers/store', [OrderCustomersController::class, 'store'])->name('ordercustomers.store');
 
     Route::group(['prefix'=>'order','as'=>'orders.'], function(){
       Route::get('/', [OrderController::class, 'index'])->name('index');
@@ -89,8 +90,8 @@ Route::group([
       Route::get('/', [OrderController::class, 'index'])->name('index');
       Route::get('/create', [OrderController::class, 'create'])->name('create');
       Route::post('/store', [OrderController::class, 'store'])->name('store');
-      Route::get('/show/{id}', [OrderController::class, 'show'])->name('show');
-      Route::delete('/destroy', [OrderController::class, 'destroy'])->name('destroy');
+      Route::get('/show/{order}', [OrderController::class, 'show'])->name('show');
+      Route::delete('/delete/{order}', [OrderController::class, 'destroy'])->name('destroy');
 
     });
     Route::group(['prefix'=>'cart','as'=>'carts.'], function(){

@@ -21,7 +21,7 @@
                                     alt="product-image"
                                     class="rounded"
                                     id="productImagePreview"
-                                    style="width: 100px; height: 100px; object-fit: cover;">
+                                    style="width: 100px; height: 100px; object-fit: contain;">
                                 </div>
                                 <div class="button-wrapper">
                                     <label for="upload_image" class="btn btn-primary me-2 mb-2" tabindex="0">

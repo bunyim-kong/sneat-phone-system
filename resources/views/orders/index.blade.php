@@ -39,7 +39,7 @@
               <tbody>
                   @forelse ($orders as $key => $order)
                       <tr>
-                          <td><strong>{{ $order->id_number ?? ''}}</strong> </td>
+                          <td><strong>{{ str_pad($order->id, 5, '0', STR_PAD_LEFT) }}</strong> </td>
                           <td><strong>{{ $order->customer_name ?? ''}}</strong> </td>
                           <td>{{ setToStringDolla($order->total_amount) ?? ''}}</td>
                           <td>{!! $order->payment_status_badges ?? ''!!}</td>
@@ -48,7 +48,7 @@
                           <td>{!! '<span class="badge bg-label-info">'.setToStringDateFormat($order->order_date).'</span>'!!}</td>
                           <td>
                               @can('order-list')
-                                <a href="{{ route('sales.show', withLang(['id' => $order->id])) }}" class="btn btn-icon btn-outline-secondary">
+                                <a href="{{ route('sales.show', withLang(['order' => $order->id])) }}" class="btn btn-icon btn-outline-secondary">
                                     <span class="tf-icons bx bx-detail"></span>
                                 </a>
                               @endcan
