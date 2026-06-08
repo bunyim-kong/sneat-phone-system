@@ -43,4 +43,12 @@ class ProductRequest extends FormRequest
         'note' => 'nullable|string',
     ];
     }
+
+    public function message(): array
+    {
+      return [
+        'product_imei.numeric' => 'This field cannot be filled with text, only numbers!',
+        'purchase_price.numeric' => 'This field cannot be filled with text, only numbers!',
+      ];
+    }
 }

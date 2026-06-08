@@ -236,7 +236,7 @@
                               <i class="bx bx-dots-vertical-rounded"></i>
                           </button>
                           <div class="dropdown-menu dropdown-menu-end" aria-labelledby="lastestSale">
-                              <a class="dropdown-item" href="{{ route('orders.index', withLang())}}">{{ __('order.view_all')}}</a>
+                              <a class="dropdown-item" href="{{ route('orders.indexOrder', withLang())}}">{{ __('order.view_all')}}</a>
                               <a class="dropdown-item" href="{{ route('sales.create', withLang())}}">{{ __('order.place_new')}}</a>
                           </div>
                       </div>

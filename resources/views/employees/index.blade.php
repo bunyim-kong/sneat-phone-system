@@ -48,11 +48,11 @@
                                     </li>
                                 </ul>
                             </td>
-                            <td><strong>{{ $user->employee->name ?? ''}}</strong></td>
-                            <td>{{ $user->employee->email ?? ''}}</td>
-                            <td>{{ $user->employee->phone ?? '' }}</td>
-                            <td>{{ $user->employee->position ?? ''}}</td>
-                            <td>{!! $user->employee->statusname ?? ''!!}</td>
+                            <td><strong>{{ $user->name ?? ''}}</strong></td>
+                            <td>{{ $user->email ?? ''}}</td>
+                            <td>{{ $user->phone ?? '' }}</td>
+                            <td>{{ $user->position ?? ''}}</td>
+                            <td>{!! $user->statusname ?? ''!!}</td>
                             @can('user-edit')
                             <td>
                                     <a href="{{ route('users.edit', withLang(['id' => $user->id])) }}" class="btn btn-icon btn-outline-secondary">

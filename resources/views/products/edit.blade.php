@@ -37,7 +37,7 @@
                                       alt="product-image"
                                       id="productImagePreview"
                                       class="rounded"
-                                      style="width: 100px; height: 100px; object-fit: cover;"
+                                      style="width: 100px; height: 100px; object-fit: contain;"
                                       onError="this.onerror=null;this.src='{{ asset('/assets/img/blank-product.svg') }}';">
                                 </div>
                                 <div class="button-wrapper">
@@ -317,7 +317,7 @@
             var selectedType = $(this).val();
             var lockDropdown = $('#network_id');
 
-            if (selectedType !== '') {
+            if (selectedType == '4') {
                 lockDropdown.prop('disabled', false).val('');
                 $('.lock-option').show();
             } else {

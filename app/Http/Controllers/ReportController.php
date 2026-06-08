@@ -411,8 +411,8 @@ class ReportController extends Controller
 
         }
 
-        $totalSellingPrice = $query->sum('unit_price');
-        $totalPurchasePrice = $query->withSum('product', 'purchase_price')->get()->sum('product.purchase_price');
+        $totalSellingPrice = (clone $query)->sum('unit_price');
+        $totalPurchasePrice = (clone $query)->withSum('product', 'purchase_price')->get()->sum('product.purchase_price');
         $totalProfit = ($totalSellingPrice - $totalPurchasePrice);
         $orders = $query->orderBy('created_at', 'desc')->paginate(20);
 
@@ -786,7 +786,7 @@ class ReportController extends Controller
         $totalIncome = 0;
 
         $loans = $query->orderBy('created_at', 'desc')->get();
-        
+
         $file_pdf = 'reports-daily-loan'.$currentDate.'.pdf';
         $type = $request->type ?? '';
 
@@ -949,63 +949,65 @@ class ReportController extends Controller
     }
 
     public function product(Request $request)
-    {
-        $query = Product::query();
-        $parameterNames = [];
-        if ($request->search) {
-          $parameterNames['search'] = true;
-          $filters = $request->only(['name', 'from_date', 'to_date', 'select']);
-          if(!empty($filters['select'])){
-              if($filters['select'] == 1){
-                  $query->whereDate('purchase_date', now()->toDateString());
+{
+    $query = Product::query();
+    $parameterNames = [];
 
-              }elseif($filters['select'] == 2){
-                  $query->whereBetween('purchase_date', [now()->startOfWeek(), now()->endOfWeek()]);
+    if ($request->search) {
+        $parameterNames['search'] = true;
+        $filters = $request->only(['name', 'from_date', 'to_date', 'select']);
 
-              }elseif($filters['select'] == 3){
-                  $query->whereMonth('purchase_date', now()->month);
+        if (!empty($filters['select'])) {
+            if ($filters['select'] == 1) {
+                $query->whereDate('purchase_date', now()->toDateString());
+            } elseif ($filters['select'] == 2) {
+                $query->whereBetween('purchase_date', [now()->startOfWeek(), now()->endOfWeek()]);
+            } elseif ($filters['select'] == 3) {
+                $query->whereMonth('purchase_date', now()->month);
+            } elseif ($filters['select'] == 4) {
+                $query->whereYear('purchase_date', now()->year);
+            }
+            $parameterNames['select'] = $filters['select'];
+        } else {
+            if (!empty($filters['name'])) {
+                // Ensure 'name' is the correct column name in your database table
+                $query->where('name', 'like', '%' . $filters['name'] . '%');
+                $parameterNames['name'] = $filters['name'];
+            }
 
-              }elseif($filters['select'] == 4){
-                  $query->whereYear('purchase_date', now()->year);
-              }
-              $parameterNames['select'] = $filters['select'];
-          }else{
-              if (!empty($filters['name'])) {
-                  $query->where('name', 'like', '%' . $filters['name'] . '%');
-                  $parameterNames['name'] = $filters['name'];
-              }
-
-              if (!empty($filters['from_date']) && !empty($filters['to_date'])) {
-                  $query->whereBetween('purchase_date', [$filters['from_date'], $filters['to_date']]);
-                  $parameterNames['from_date'] = $filters['from_date'];
-                  $parameterNames['to_date'] = $filters['to_date'];
-              } elseif (!empty($filters['from_date'])) {
-                  $query->where('purchase_date', '>=', $filters['from_date']);
-                  $parameterNames['from_date'] = $filters['from_date'];
-              } elseif (!empty($filters['to_date'])) {
-                  $query->where('purchase_date', '<=', $filters['to_date']);
-                  $parameterNames['to_date'] = $filters['to_date'];
-              }
-          }
-        }else{
-          $query->whereDate('purchase_date', now()->toDateString());
+            if (!empty($filters['from_date']) && !empty($filters['to_date'])) {
+                $query->whereBetween('purchase_date', [$filters['from_date'], $filters['to_date']]);
+                $parameterNames['from_date'] = $filters['from_date'];
+                $parameterNames['to_date'] = $filters['to_date'];
+            } elseif (!empty($filters['from_date'])) {
+                $query->where('purchase_date', '>=', $filters['from_date']);
+                $parameterNames['from_date'] = $filters['from_date'];
+            } elseif (!empty($filters['to_date'])) {
+                $query->where('purchase_date', '<=', $filters['to_date']);
+                $parameterNames['to_date'] = $filters['to_date'];
+            }
         }
+    } else {
 
-        $totalProduct = $query->count();
-        $totalSellingPrice = $query->sum('selling_price');
-        $totalPurchasePrice = $query->sum('purchase_price');
-        $products = $query->paginate(2);
-        $totalProductConditionNew = $query->where('condition', Product::CONDITION_NEW)->count();
-
-        return view('reports.product', [
-            'products' => $products,
-            'totalProduct' => $totalProduct,
-            'totalSellingPrice' => $totalSellingPrice,
-            'totalPurchasePrice' => $totalPurchasePrice,
-            'totalProductConditionNew' => $totalProductConditionNew,
-            'parameterNames' => $parameterNames,
-        ]);
     }
+    $totalProduct = $query->count();
+    $totalSellingPrice = $query->sum('selling_price');
+    $totalPurchasePrice = $query->sum('purchase_price');
+
+    $totalProductConditionNew = (clone $query)->where('condition', Product::CONDITION_NEW)->count();
+
+    // Execute pagination last
+    $products = $query->paginate(2);
+
+    return view('reports.product', [
+        'products' => $products,
+        'totalProduct' => $totalProduct,
+        'totalSellingPrice' => $totalSellingPrice,
+        'totalPurchasePrice' => $totalPurchasePrice,
+        'totalProductConditionNew' => $totalProductConditionNew,
+        'parameterNames' => $parameterNames,
+    ]);
+}
 
     public function productPdf(Request $request)
     {

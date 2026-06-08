@@ -52,7 +52,7 @@
                               <tr>
                                   <td><strong>{{ $orderDetail->order->id_number ?? ''}}</strong> </td>
                                   <td><strong>{{ $orderDetail->order->customer_name ?? ''}}</strong> </td>
-                                  <td>{!! $orderDetail->product->series_name ?? ''!!} ({{ $orderDetail->product->product_imei ?? ''}} )</td>                                  
+                                  <td>{!! $orderDetail->product->series_name ?? ''!!} ({{ $orderDetail->product->product_imei ?? ''}} )</td>
                                   <td>{{ setToStringDolla($orderDetail->product->purchase_price ?? 0)}}</td>
                                   <td>{{ setToStringDolla($orderDetail->unit_price ?? 0)}}</td>
                                   <td class="text-center">{!! $orderDetail->order->payment_type_badges ?? '' !!}</td>

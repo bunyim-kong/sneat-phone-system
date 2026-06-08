@@ -82,7 +82,7 @@ class ProductController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Product $product)
     {
       $brands = Brand::all();
       $all_series = Series::all();
@@ -94,7 +94,7 @@ class ProductController extends Controller
       $condition = Product::CONDITION;
       $product_statuses = Product::STATUS_OPTION;
 
-      return view('products.create', compact('brands','all_series', 'colors', 'models', 'storages', 'type_of_machines', 'lock_types', 'condition', 'product_statuses'));
+      return view('products.create', compact('product','brands','all_series', 'colors', 'models', 'storages', 'type_of_machines', 'lock_types', 'condition', 'product_statuses'));
     }
 
     /**

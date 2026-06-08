@@ -2,20 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Order;
-use App\Models\Product;
 use App\Models\Brand;
-use App\Models\Series;
-use App\Models\Color;
-use App\Models\ModelType;
-use App\Models\Storage;
-use App\Models\Customer;
 use App\Models\Cart;
+use App\Models\Color;
+use App\Models\Customer;
+use App\Models\ModelType;
+use App\Models\Order;
 use App\Models\OrderDetail;
+use App\Models\Product;
+use App\Models\Series;
+use App\Models\Storage;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Carbon\Carbon;
-use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
@@ -185,5 +186,59 @@ class OrderController extends Controller
       $file_pdf = 'invoice-'.str_pad($order->id, 5, '0', STR_PAD_LEFT).'.pdf';
       $type = $request->type ?? 'download';
       return view('orders.invoice-pdf', compact('order', 'order_detals', 'currentDate' ,'file_pdf', 'type'));
+    }
+
+    public function indexOrder(Request $request)
+    {
+        $query = Product::with(['brand','series','color','storage'])
+            ->where('status', 1);
+
+        // Filter only call brand
+        if ($request->filled('brand_id')) {
+            $query->where('brand_id', $request->brand_id);
+        }
+
+        $products = $query->latest()->get();
+
+        //So here it remove walk-in customer and only add customer that have loan
+        $customers = Customer::select('id', 'name', 'phone')->get();
+
+        $brands = Brand::all();
+
+        return view('orders.indexOrder', compact(
+            'products',
+            'customers',
+            'brands'
+        ));
+    }
+
+    public function storeOrder(Request $request)
+    {
+        // Calculate total price from the dynamic hidden input elements array
+        $calculatedTotal = collect($request->items)->sum('price');
+
+        DB::transaction(function () use ($request, $calculatedTotal) {
+            // Save parent order record
+            $order = Order::create([
+                'customer_id'    => $request->customer_id ?: null,
+                'employee_id'    => Auth::id(),
+                'status'         => Order::STATUS_ACTIVE,
+                'total_amount'   => $calculatedTotal,
+                'payment_status' => $request->payment_status ?? 1,
+                'payment_type'   => $request->payment_type ?? 1,
+                'order_date'     => now(),
+            ]);
+
+            // Loop through selected phones to set their status to 'Sold' (Status 2)
+            if ($request->has('items')) {
+                foreach ($request->items as $item) {
+                    // Pull the correct inner product_id value key from the array dictionary
+                    Product::where('id', $item['product_id'])->update(['status' => 2]);
+                }
+            }
+        });
+
+        // Redirect back to index with a flash alert message banner
+        return redirect()->route('sales.index', withLang())->with('success', 'Order processed successfully!');
     }
 }

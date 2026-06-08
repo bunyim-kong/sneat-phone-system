@@ -127,7 +127,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <a href="{{ route('orders.index', withLang()) }}" class="btn btn-outline-secondary">
+                        <a href="{{ route('orders.indexOrder', withLang()) }}" class="btn btn-outline-secondary">
                             {{ __('button.clear') }}
                         </a>
                         <button type="submit" class="btn btn-primary">{{ __('button.search') }}</button>

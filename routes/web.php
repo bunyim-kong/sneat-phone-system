@@ -78,13 +78,9 @@ Route::group([
         Route::post('/profile/update/password', [UserController::class, 'updatePassword'])->name('update.profile.password');
     });
 
-     Route::get('/order-customers', [OrderCustomersController::class, 'index'])
-    ->name('ordercustomers.index');
-    Route::post('/order-customers/store', [OrderCustomersController::class, 'store'])->name('ordercustomers.store');
-
     Route::group(['prefix'=>'order','as'=>'orders.'], function(){
-      Route::get('/', [OrderController::class, 'index'])->name('index');
-      Route::get('/create', [OrderController::class, 'create'])->name('create');
+      Route::get('/', [OrderController::class, 'indexOrder'])->name('indexOrder');
+      Route::post('/store', [OrderController::class, 'storeOrder'])->name('storeOrder');
     });
     Route::group(['prefix'=>'sale','as'=>'sales.'], function(){
       Route::get('/', [OrderController::class, 'index'])->name('index');

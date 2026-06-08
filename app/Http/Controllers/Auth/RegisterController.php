@@ -113,6 +113,6 @@ class RegisterController extends Controller
         // $this->guard()->login($user);
 
         return $this->registered($request, $user)
-                        ?: redirect()->route('users.edit', withLang(['id' => $user->id]));
+                        ?: redirect()->route('users.index', withLang(['id' => $user->id]));
     }
 }

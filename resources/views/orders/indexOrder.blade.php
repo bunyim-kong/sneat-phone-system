@@ -11,10 +11,6 @@
     }
     .pos-vertical-nav {
         width: 85px;
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
-        flex-shrink: 0;
     }
     .pos-nav-block {
         width: 85px;
@@ -28,6 +24,7 @@
         border-radius: 0.5rem;
         cursor: pointer;
         transition: all 0.2s ease-in-out;
+        margin-bottom: 0.75rem;
     }
     .pos-main-showroom {
         flex-grow: 1;
@@ -79,12 +76,27 @@
         flex-grow: 1;
         overflow-y: auto;
     }
+    .filter-btn:hover img,
+    .filter-btn.active img,
+    .filter-btn:active img,
+    .filter-btn.btn-active img {
+        filter: brightness(0) invert(1);
+    }
+
+    .pos-vertical-nav {
+        overflow-y: auto;
+        scrollbar-width: none;
+    }
+
+    .pos-vertical-nav::-webkit-scrollbar {
+        display: none;
+    }
 </style>
 @endpush
 
 @section('content')
 <div class="container-fluid flex-grow-1 container-p-y">
-    <form action="{{ route('ordercustomers.store', withLang()) }}" method="POST" id="pos-order-form">
+    <form action="{{ route('orders.storeOrder', withLang()) }}" method="POST" id="pos-order-form">
         @csrf
 
         <div class="pos-layout-wrapper">
@@ -94,13 +106,48 @@
                     <i class='bx bx-search fs-3 mb-1'></i>
                     <span>Search</span>
                 </button>
-                <button type="button" class="pos-nav-block btn btn-primary p-0 d-flex flex-column align-items-center justify-content-center">
+                <button type="button" data-filter="all" class="filter-btn pos-nav-block btn btn-primary p-0 d-flex flex-column align-items-center justify-content-center">
                     <i class='bx bx-grid-alt fs-3 mb-1'></i>
                     <span>All Phones</span>
                 </button>
-                <button type="button" class="pos-nav-block btn btn-outline-secondary bg-white p-0 d-flex flex-column align-items-center justify-content-center text-secondary border">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg" style="width: 26px; height: 26px; object-fit: contain;" class="mb-1" alt="Apple">
-                    <span>APPLE</span>
+                <button type="button" data-filter="apple" class="filter-btn pos-nav-block btn btn-outline-secondary bg-white p-0 d-flex flex-column align-items-center justify-content-center">
+                    <img src="{{ asset('assets/icons/SimpleIconsApple.svg') }}" style="width: 40px; height: 40px; object-fit: contain;" class="mb-1" alt="Apple">
+                </button>
+                <button type="button" data-filter="samsung" class="filter-btn pos-nav-block btn btn-outline-secondary bg-white p-0 d-flex flex-column align-items-center justify-content-center">
+                  <img src="{{ asset('assets/icons/SimpleIconsSamsung.svg') }}" style="width: 40px; height: 40px; object-fit: contain;" class="mb-1" alt="Samsung">
+                </button>
+                <button type="button" data-filter="oppo" class="filter-btn pos-nav-block btn btn-outline-secondary bg-white p-0 d-flex flex-column align-items-center justify-content-center">
+                  <img src="{{ asset('assets/icons/SimpleIconsOppo.svg') }}" style="width: 40px; height: 40px; object-fit: contain;" class="mb-1" alt="Oppo">
+                </button>
+                <button type="button" data-filter="vivo" class="filter-btn pos-nav-block btn btn-outline-secondary bg-white p-0 d-flex flex-column align-items-center justify-content-center">
+                  <img src="{{ asset('assets/icons/SimpleIconsVivo.svg') }}" style="width: 40px; height: 40px; object-fit: contain;" class="mb-1" alt="Vivo">
+                </button>
+                <button type="button" data-filter="xiaomi" class="filter-btn pos-nav-block btn btn-outline-secondary bg-white p-0 d-flex flex-column align-items-center justify-content-center">
+                  <img src="{{ asset('assets/icons/SimpleIconsXiaomi.svg') }}" style="width: 40px; height: 40px; object-fit: contain;" class="mb-1" alt="Xiaomi">
+                </button>
+                <button type="button" data-filter="huawei" class="filter-btn pos-nav-block btn btn-outline-secondary bg-white p-0 d-flex flex-column align-items-center justify-content-center">
+                  <img src="{{ asset('assets/icons/SimpleIconsHuawei.svg') }}" style="width: 40px; height: 40px; object-fit: contain;" class="mb-1" alt="Huawei">
+                </button>
+                <button type="button" data-filter="asus" class="filter-btn pos-nav-block btn btn-outline-secondary bg-white p-0 d-flex flex-column align-items-center justify-content-center">
+                  <img src="{{ asset('assets/icons/SimpleIconsAsus.svg') }}" style="width: 40px; height: 40px; object-fit: contain;" class="mb-1" alt="Asus">
+                </button>
+                <button type="button" data-filter="sony" class="filter-btn pos-nav-block btn btn-outline-secondary bg-white p-0 d-flex flex-column align-items-center justify-content-center">
+                  <img src="{{ asset('assets/icons/SimpleIconsSony.svg') }}" style="width: 40px; height: 40px; object-fit: contain;" class="mb-1" alt="Sony">
+                </button>
+                <button type="button" data-filter="realme" class="filter-btn pos-nav-block btn btn-outline-secondary bg-white p-0 d-flex flex-column align-items-center justify-content-center">
+                  <img src="{{ asset('assets/icons/ArcticonsRealmeCommunity.svg') }}" style="width: 40px; height: 40px; object-fit: contain;" class="mb-1" alt="Realme">
+                </button>
+                <button type="button" data-filter="nokia" class="filter-btn pos-nav-block btn btn-outline-secondary bg-white p-0 d-flex flex-column align-items-center justify-content-center">
+                  <img src="{{ asset('assets/icons/CibNokia.svg') }}" style="width: 40px; height: 40px; object-fit: contain;" class="mb-1" alt="Nokia">
+                </button>
+                <button type="button" data-filter="tecno" class="filter-btn pos-nav-block btn btn-outline-secondary bg-white p-0 d-flex flex-column align-items-center justify-content-center">
+                  <img src="{{ asset('assets/icons/ArcticonsTecnoSpot.svg') }}" style="width: 40px; height: 40px; object-fit: contain;" class="mb-1" alt="Tecno">
+                </button>
+                <button type="button" data-filter="oneplus" class="filter-btn pos-nav-block btn btn-outline-secondary bg-white p-0 d-flex flex-column align-items-center justify-content-center">
+                  <img src="{{ asset('assets/icons/SimpleIconsOneplus.svg') }}" style="width: 40px; height: 40px; object-fit: contain;" class="mb-1" alt="Oneplus">
+                </button>
+                <button type="button" data-filter="redmagic" class="filter-btn pos-nav-block btn btn-outline-secondary bg-white p-0 d-flex flex-column align-items-center justify-content-center">
+                  <img src="{{ asset('assets/icons/SimpleIconsRedmagic.png') }}" style="width: 40px; height: 40px; object-fit: contain;" class="mb-1" alt="Redmagic">
                 </button>
             </div>
 
@@ -108,7 +155,7 @@
                 <div class="mb-3">
                     <div class="input-group input-group-merge">
                         <span class="input-group-text text-muted"><i class="bx bx-search fs-5"></i></span>
-                        <input type="text" id="catalog-search" class="form-control" placeholder="Search by model, IMEI, description...">
+                        <input type="search" id="catalog-search" class="form-control" placeholder="Search by model, IMEI, description...">
                     </div>
                 </div>
 
@@ -118,7 +165,8 @@
                             <div class="col-6 col-sm-4 col-md-3 catalog-item"
                                 data-product-id="{{ $product->id }}"
                                 data-name="{{ strtolower($product->product_name) }}"
-                                data-imei="{{ $product->product_imei }}">
+                                data-imei="{{ $product->product_imei }}"
+                                data-brand="{{ isset($product->brand) ? strtolower($product->brand->name) : 'unknown' }}">
 
                                 <div class="card h-100 pos-device-card border"
                                      onclick="addToCart({ id: {{ $product->id }}, name: '{{ $product->product_name }}', imei: '{{ $product->product_imei }}', price: {{ (float)$product->purchase_price }} })">
@@ -216,7 +264,10 @@
         );
 
         if (card) {
-            card.classList.add('cart-hidden');
+            // FIX 1: Use Bootstrap's built-in utility class to hide the element
+            card.classList.add('d-none');
+            // Mark it with a custom attribute so the live search knows to leave it hidden
+            card.setAttribute('data-in-cart', 'true');
         }
     }
 
@@ -226,7 +277,8 @@
         );
 
         if (card) {
-            card.classList.remove('cart-hidden');
+            card.classList.remove('d-none');
+            card.removeAttribute('data-in-cart');
         }
     }
 
@@ -239,17 +291,13 @@
         }
 
         cart.push(product);
-
         hideProductCard(product.id);
-
         renderCart();
     }
 
     function removeFromCart(productId) {
         showProductCard(productId);
-
         cart = cart.filter(item => item.id !== productId);
-
         renderCart();
     }
 
@@ -334,16 +382,21 @@
         btnSubmit.disabled = false;
     }
 
+    // FIX 2: Modified search listener to leave items hidden if they are inside the cart array
     document.getElementById('catalog-search').addEventListener('input', function(e) {
         const query = e.target.value.toLowerCase();
 
         document.querySelectorAll('.catalog-item').forEach(card => {
+            // Skip execution on items already flagged as active inside your cart
+            if (card.getAttribute('data-in-cart') === 'true') {
+                card.classList.add('d-none');
+                return;
+            }
+
             const name = card.dataset.name || '';
             const imei = card.dataset.imei || '';
 
-            const matched =
-                name.includes(query) ||
-                imei.includes(query);
+            const matched = name.includes(query) || imei.includes(query);
 
             if (matched) {
                 card.classList.remove('d-none');
@@ -357,5 +410,43 @@
         .addEventListener('submit', function() {
             cart = [];
         });
+
+        document.querySelectorAll('.filter-btn').forEach(button => {
+    button.addEventListener('click', function() {
+        const targetFilter = this.getAttribute('data-filter');
+
+        // Manage button active states visual feedback (Optional Bootstrap classes change)
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.classList.replace('btn-primary', 'btn-outline-secondary');
+            btn.classList.add('bg-white', 'text-secondary');
+        });
+        this.classList.replace('btn-outline-secondary', 'btn-primary');
+        this.classList.remove('bg-white', 'text-secondary');
+
+        // Filter the catalog cards
+        document.querySelectorAll('.catalog-item').forEach(card => {
+            // CRITICAL: Always keep items hidden if they are currently inside the cart
+            if (card.getAttribute('data-in-cart') === 'true') {
+                card.classList.add('d-none');
+                return;
+            }
+
+            const itemBrand = card.getAttribute('data-brand') || '';
+
+            if (targetFilter === 'all' || itemBrand === targetFilter) {
+                card.classList.remove('d-none');
+            } else {
+                card.classList.add('d-none');
+            }
+        });
+
+        // Optional: Clear the search input text when changing categories to avoid confusion
+        document.getElementById('catalog-search').value = '';
+    });
+});
+$('.filter-btn').on('click', function () {
+    $('.filter-btn').removeClass('active');
+    $(this).addClass('active');
+});
 </script>
 @endpush
