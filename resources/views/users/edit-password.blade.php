@@ -23,7 +23,7 @@
                         @endcan
                     @endcan
                 </ul>
-                <form id="formAccountSettings" method="POST" action="{{ route('users.update.password', withLang(['id' => $user->id]))}}" enctype="multipart/form-data">
+                <form id="formAccountSettings" method="POST" action="{{ route('users.update.profile.password', withLang())}}" enctype="multipart/form-data">
                     @csrf
                     <div class="card mb-4">
                         <h5 class="card-header">Update Password</h5>
@@ -47,36 +47,36 @@
                                 <label for="current-password" class="form-label">Current Password</label>
                                 <div class="input-group input-group-merge">
                                     <input id="current-password" type="password" class="form-control @error('current_password') is-invalid @enderror" name="current_password" required autocomplete="current-password" placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;" aria-describedby="current-password">
+                                    <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
                                     @error('current_password')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
                                         </span>
                                     @enderror
-                                    <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
                                 </div>
                             </div>
                             <div class="mb-3 form-password-toggle col-6">
                                   <label for="new-password" class="form-label">New Password</label>
                                   <div class="input-group input-group-merge">
                                       <input id="new-password" type="password" class="form-control @error('new_password') is-invalid @enderror" name="new_password" required autocomplete="new-password" placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;" aria-describedby="new-password">
+                                      <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
                                       @error('new_password')
                                           <span class="invalid-feedback" role="alert">
                                               <strong>{{ $message }}</strong>
                                           </span>
                                       @enderror
-                                      <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
                                   </div>
                             </div>
                             <div class="mb-3 form-password-toggle col-6">
                                 <label for="password-confirm" class="form-label">Confriem Password</label>
                                 <div class="input-group input-group-merge">
                                     <input id="password-confirm" type="password" class="form-control @error('new_password_confirmation') is-invalid @enderror" name="new_password_confirmation" required autocomplete="password-confirm" placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;" aria-describedby="password-confirm">
+                                    <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
                                     @error('new_password_confirmation')
                                         <span class="invalid-feedback" role="alert">
                                             <strong>{{ $message }}</strong>
                                         </span>
                                     @enderror
-                                    <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
                                 </div>
                             </div>
                             <div class="mt-2">

@@ -227,7 +227,7 @@
                             </div>
                             <div class="mt-2">
                                 <button type="submit" class="btn btn-primary me-2">Save changes</button>
-                                <button type="reset" class="btn btn-outline-secondary">Cancel</button>
+                                <a href="{{ route('users.index', withLang()) }}" class="btn btn-outline-secondary">Cancel</a>
                             </div>
                     </div>
                   </form>

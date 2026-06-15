@@ -53,6 +53,7 @@ class Product extends Model
             '1' => self::STATUS_AVAILABLE,
             '2' => self::STATUS_SOLD,
             '3' => self::STATUS_BROKEN,
+            '4' => self::STATUS_LOAN,
         ];
     }
 

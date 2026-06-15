@@ -34,10 +34,31 @@
                                 <div class="form-group">
                                     <label class="form-label" for="basic-default-fullname">Permission</label>
                                     <br/>
-                                    @foreach($permission as $value)
-                                        <input class="form-check-input @error('permission') is-invalid @enderror" type="checkbox" name="permission[]" id="permission-{{ $value->id }}" value="{{ $value->id }}">
-                                        <label for="permission-{{ $value->id }}">{{ $value->name }}</label>
-                                        <br/>
+                                    @foreach($permissions as $category => $actions)
+                                        <div class="card mb-3 permission-group-container">
+                                          <div class="card-header bg-light d-flex align-items-center">
+                                            <div class="form-check m-0">
+                                              <input type="checkbox" class="form-check-input parent-checkbox" id="parent-{{ $category }}">
+                                              <label class="form-check-label h5 mb-0 text-capitalize ms-2" for="parent-{{ $category }}">
+                                                {{ str_replace('-', ' ', $category) }}
+                                              </label>
+                                            </div>
+                                          </div>
+                                          <div class="card-body">
+                                            <div class="row">
+                                              @foreach($actions as $action)
+                                              <div class="col-md-3 col-ms-6 mb-2">
+                                                <div class="form-check">
+                                                  <input type="checkbox" class="form-check-input child-checkbox @error('permission') is-invalid @enderror" name="permission[]" id="permission-{{ $action->id }}" value="{{ $action->id }}">
+                                                  <label for="permission-{{ $action->id }}" class="form-check-label text-capitalize">
+                                                    {{ str_replace([$category . '-', '-'], [' ', ' '], $action->name) }}
+                                                  </label>
+                                                </div>
+                                              </div>
+                                              @endforeach
+                                            </div>
+                                          </div>
+                                        </div>
                                     @endforeach
                                     @error('permission')
                                         <span class="invalid-feedback" role="alert">
@@ -63,6 +84,28 @@
 @endsection
 @push('script')
     <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          const parentCheckboxes = document.querySelectorAll('.parent-checkbox');
+          parentCheckboxes.forEach(parent => {
+            parent.addEventListener('change', function () {
+              const container = this.closest('.permission-group-container');
+              const childCheckboxes = container.querySelectorAll('.child-checkbox');
+              childCheckboxes.forEach(child => {
+                child.checked = this.checked;
+              });
+            });
+          });
+          const childCheckboxes = document.querySelectorAll('.child-checkbox');
+          childCheckboxes.forEach(child => {
+            child.addEventListener('change', function () {
+              const container = this.closest('.permission-group-container');
+              const parent = container.querySelector('.parent-checkbox');
+              const allChildren = container.querySelectorAll('.child-checkbox');
+              const allChecked = Array.from(allChildren).every(c => c.checked);
+              parent.checked = allChecked;
+            });
+          });
+        });
         function submitForm(){
             $('.submit-delete').click();
         }

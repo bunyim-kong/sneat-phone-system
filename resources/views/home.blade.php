@@ -149,9 +149,9 @@
                         @forelse ($loanPayments as $payment)
                             <tr>
                                 <td>
-                                    <strong>{{ $payment->loan->number ?? '' }}</strong>
+                                    <strong>{{ $payment->loan->number ?? '1' }}</strong>
                                 </td>
-                                <td>{{ $payment->loan->customer->name ?? '' }}</td>
+                                <td>{{ $payment->loan->customer->name ?? '1' }}</td>
                                 <td>{{ setToStringDolla($payment->amount ?? 0) }}</td>
                                 <td>
                                     {!! $payment->status_name ?? '' !!}

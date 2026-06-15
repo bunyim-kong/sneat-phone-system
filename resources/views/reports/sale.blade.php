@@ -57,7 +57,7 @@
                                   <td>{{ setToStringDolla($orderDetail->unit_price ?? 0)}}</td>
                                   <td class="text-center">{!! $orderDetail->order->payment_type_badges ?? '' !!}</td>
                                   <td class="text-center">{!! $orderDetail->product->condition_label_badges_name ?? ''!!}</td>
-                                  <td class="text-center">{!! '<span class="badge bg-label-info">'.setToStringDateFormat($orderDetail->order->order_date).'</span>'!!}</td>
+                                  <td class="text-center">{!! '<span class="badge bg-label-info">'.setToStringDateFormat($orderDetail->order->order_date ?? '').'</span>'!!}</td>
                               </tr>
                               @empty
                                   <tr class="no-data">

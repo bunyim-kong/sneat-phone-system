@@ -47,8 +47,15 @@ class RoleController extends Controller
      */
     public function create(): View
     {
-        $permission = Permission::get();
-        return view('roles.create',compact('permission'));
+        $allPermissions = Permission::all();
+        $permissions = [];
+        foreach ($allPermissions as $permission) {
+          $parts = explode('-', $permission->name, 2);
+          $category = $parts[0] ?? 'other';
+
+          $permissions[$category][] = $permission;
+        }
+        return view('roles.create',compact('permissions'));
     }
 
     /**

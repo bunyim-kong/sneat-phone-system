@@ -122,7 +122,13 @@ class OrderController extends Controller
     // 3. Loop through items to mark selected phone records as 'Sold' (Status 2)
     if ($request->has('items')) {
         foreach ($request->items as $productId => $item) {
-            \App\Models\Product::where('id', $productId)->update(['status' => 2]);
+            Product::where('id', $productId)->update(['status' => 2]);
+
+            OrderDetail::create([
+              'order_id' => $order->id,
+              'product_id' => $productId,
+              'unit_price' => $item['price'] ?? 0,
+            ]);
         }
     }
 
@@ -234,6 +240,12 @@ class OrderController extends Controller
                 foreach ($request->items as $item) {
                     // Pull the correct inner product_id value key from the array dictionary
                     Product::where('id', $item['product_id'])->update(['status' => 2]);
+
+                    OrderDetail::create([
+                      'order_id' => $order->id,
+                      'product_id' => $item['product_id'],
+                      'unit_price' => $item['price'] ?? 0,
+                    ]);
                 }
             }
         });

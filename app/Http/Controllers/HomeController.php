@@ -65,8 +65,8 @@ class HomeController extends Controller
       } else {$percentageChange = 0;
       }
       $orders = Order::limit(5)->orderBy('order_date', 'desc')->get();
-      $loanPayments = [];
-      $loans = [];
+      $loanPayments = LoanPayment::get();
+      $loans = Loan::get();
       $lateLoans = Loan::has('customer')->with('customer')->latePayment()->limit(5)->orderBy('next_payment_date', 'desc')->get();
 
       return view('home', [

@@ -146,9 +146,9 @@
                                     {{ $item->product?->color?->name ?? 'N/A' }}, Original
                                 </span>
                             </td>
-                            <td>{{ setToStringDolla($item->price) }}</td>
+                            <td>{{ setToStringDolla($item->product?->selling_price) }}</td>
                             <td>1</td>
-                            <td class="text-end fw-semibold text-dark">{{ setToStringDolla($item->price) }}</td>
+                            <td class="text-end fw-semibold text-dark">{{ setToStringDolla($item->product?->purchase_price) }}</td>
                         </tr>
                     @empty
                         <tr>

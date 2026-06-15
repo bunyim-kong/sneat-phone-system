@@ -133,7 +133,20 @@ class LoanController extends Controller
         $data['interest_remain'] = $request->duration * $request->amount_interest;
         $nextPaymentDate = date('Y-m-d', strtotime($request->date . ' +1 month'));
         $data['next_payment_date'] = $nextPaymentDate;
-        $loan = Loan::create($data);
+        $loan = Loan::create([
+          'customer_id' => $data['customer_id'] ?? 0,
+          'employee_id' => $data['employee_id'] ?? 0,
+          'product_id' => $data['product_id'] ?? 0,
+          'amount' => $data['amount'] ?? 0,
+          'first_amount' => $data['first_amount'] ?? 0,
+          'interest' => $data['interest'] ?? 0,
+          'duration' => $data['duration'] ?? 0,
+          'amount_principal' => $data['amount_principal'] ?? 0,
+          'amount_interest' => $data['amount_interest'] ?? 0,
+          'payable_amount' => $data['payable_amount'] ?? 0,
+          'date' => $data['date'] ?? 0,
+          'phone_profit' => $data['phone_profit'] ?? 0,
+        ]);
         $purchasedPrice = $loan->product->purchase_price;
         $soldPrice = $loan->product->selling_price;
         $phoneProfit = $soldPrice - $purchasedPrice;

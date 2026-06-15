@@ -347,14 +347,12 @@ class ReportController extends Controller
 
     public function sale(Request $request)
     {
-        $query = OrderDetail::query()->whereHas('order')->with(['order', 'product']);
+        $query = OrderDetail::query()->with(['order', 'product']);
         $conditions = Product::CONDITION;
         $series = Series::pluck('name', 'id');
         $parameterNames = [];
         $currentDate = now()->format('Y-m-d');
         $filters = $request->only(['condition', 'series', 'from_date', 'to_date', 'select']);
-        if ($request->search) {
-            $parameterNames['search'] = true;
             if(!empty($filters['select'])){
                 if($filters['select'] == 1){
                     $query->whereHas('order', function ($productQuery) use ($filters) {
@@ -409,13 +407,13 @@ class ReportController extends Controller
                 }
             }
 
-        }
+
 
         $totalSellingPrice = (clone $query)->sum('unit_price');
         $totalPurchasePrice = (clone $query)->withSum('product', 'purchase_price')->get()->sum('product.purchase_price');
         $totalProfit = ($totalSellingPrice - $totalPurchasePrice);
         $orders = $query->orderBy('created_at', 'desc')->paginate(20);
-
+        // dd($orders->toArray());
         return view('reports.sale', compact(
         'orders',
         'series',

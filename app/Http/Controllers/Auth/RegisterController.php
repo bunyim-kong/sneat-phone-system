@@ -88,15 +88,16 @@ class RegisterController extends Controller
             'email' => $data['email'] ?? $data['name'].'@example.com',
             'password' => Hash::make($data['password']),
         ]);
-
         // Creates the user profile
         $employee = Employee::create([
-          'user_id' => $user->id,
-          'name' => '',
-          'latin_name' => '',
-          'phone' => '',
-          'position_id' => $data['position'] ?? 1
+            'user_id'     => $user->id,
+            'name'        => $data['name'] ?? '',
+            'latin_name'  => $data['latin_name'] ?? '',
+            'phone'       => $data['phone'] ?? '',
+            'position_id' => $data['position'] ?? 1,
+            'email'       => $data['email'] ?? ''
         ]);
+
         $user->employee()->save($employee);
         $user->assignRole($data['position']);
 
